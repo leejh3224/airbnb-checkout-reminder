@@ -1,0 +1,12 @@
+node_modules/
+
+# chrome user data directory
+userData/
+
+.env
+
+# error logs
+yarn-error.log
+
+# personal note
+notes.md
