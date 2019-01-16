@@ -75,12 +75,16 @@ app.get("/", async (req, res) => {
             $sendMessageTextarea,
             getMessage(checkInOut.type as any),
           );
-          // await newTab.close();
+          await newTab.close();
+
+          console.log(`done sending message for ${period} ${reservationCode}`);
         }
       }
     }
 
-    res.status(200).send();
+    await browser.close();
+
+    res.status(200).send({ done: true });
   } catch (error) {
     console.log(error);
   }
