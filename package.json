@@ -4,18 +4,20 @@
 	"main": "index.js",
 	"license": "MIT",
 	"scripts": {
-		"start:local": "NODE_ENV=development nodemon ./index.ts --exec ts-node",
+		"start": "env $(cat .env) nodemon ./index.ts --exec ts-node",
 		"test": "env $(cat .env) jest --watchAll --verbose=false",
-		"start": "node ./build/",
+		"start:ts": "node ./build/",
 		"build": "tsc"
 	},
 	"dependencies": {
 		"express": "^4.16.4",
+		"node-cron": "^2.0.3",
 		"puppeteer": "^1.11.0"
 	},
 	"devDependencies": {
 		"@types/express": "^4.16.0",
 		"@types/jest": "^23.3.12",
+		"@types/node-cron": "^2.0.0",
 		"@types/puppeteer": "^1.11.1",
 		"jest": "^23.6.0",
 		"ts-jest": "^23.10.5",

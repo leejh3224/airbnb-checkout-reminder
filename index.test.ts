@@ -23,7 +23,15 @@ describe("Airbnb message scheduler", () => {
   beforeEach(async () => {
     browser = await puppeteer.launch({
       headless: false,
-      args: ["--no-sandbox", "--window-size=1460,860"],
+      args: [
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-setuid-sandbox",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process",
+      ],
 
       // reuse user profile session
       userDataDir: "./userData",
@@ -35,7 +43,7 @@ describe("Airbnb message scheduler", () => {
   });
 
   afterEach(async () => {
-    await browser.close();
+    // await browser.close();
   });
 
   it.skip("should handle google oauth", async () => {
@@ -61,6 +69,7 @@ describe("Airbnb message scheduler", () => {
     const $period = "._9zwlhy1 > ._9zwlhy1";
     const $sendMessageTextarea = "#send_message_textarea";
     const $itineraryButton = 'a[href^="/reservation/itinerary"]';
+    const $messageSubmitButton = "button._1u3zpdpw";
 
     const pageList = await browser.pages();
     const page = pageList[0];
@@ -100,6 +109,7 @@ describe("Airbnb message scheduler", () => {
           const [, reservationCode] = new URL(itineraryUrl).search.split("=");
 
           const newTab = await browser.newPage();
+
           await newTab.goto(`${messaging}/${reservationCode}`);
           await newTab.waitForSelector($sendMessageTextarea);
 
@@ -108,7 +118,8 @@ describe("Airbnb message scheduler", () => {
             $sendMessageTextarea,
             getMessage(checkInOut.type as any),
           );
-          // await newTab.close();
+          // await newTab.click($messageSubmitButton);
+          await newTab.close();
         }
       }
     }

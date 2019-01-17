@@ -35,47 +35,51 @@ async function login(this: puppeteer.Browser, credentials: Credentials) {
 
   await page.click($googleButton);
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     // on "targetcreated" triggered when puppeteer opens new tab/popup window
     this.on("targetcreated", async (target: puppeteer.Target) => {
-      const isGoogleOauthPopup = target
-        .url()
-        .startsWith("https://www.airbnb.co.kr/oauth/popup_form");
+      try {
+        const isGoogleOauthPopup = target
+          .url()
+          .startsWith("https://www.airbnb.co.kr/oauth/popup_form");
 
-      if (isGoogleOauthPopup) {
-        const { email, password } = credentials;
+        if (isGoogleOauthPopup) {
+          const { email, password } = credentials;
 
-        const popup = await target.page();
+          const popup = await target.page();
 
-        // until there are no redirection requests
-        await popup.waitForNavigation({ waitUntil: "networkidle0" });
-        await popup.waitForSelector($emailInput);
-        await popup.type($emailInput, email);
-        await popup.click($emailNextButton);
+          // until there are no redirection requests
+          await popup.waitForNavigation();
+          await popup.waitForSelector($emailInput);
+          await popup.type($emailInput, email);
+          await popup.click($emailNextButton);
 
-        // TODO: find better way to detect the end of page transition
-        const popupHeadingText = "로그인";
+          // TODO: find better way to detect the end of page transition
+          const popupHeadingText = "로그인";
 
-        await popup.waitForFunction(
-          (text: string) => {
-            return (
-              document.querySelector("#headingText > content")!.textContent !==
-              text
-            );
-          },
-          {}, // options
-          popupHeadingText,
-        );
+          await popup.waitForFunction(
+            (text: string) => {
+              return (
+                document.querySelector("#headingText > content")!
+                  .textContent !== text
+              );
+            },
+            {}, // options
+            popupHeadingText,
+          );
 
-        await popup.waitForSelector($passwordInput);
-        await popup.type($passwordInput, password);
-        await popup.waitForSelector($passwordNextButton);
-        await popup.click($passwordNextButton);
+          await popup.waitForSelector($passwordInput);
+          await popup.type($passwordInput, password);
+          await popup.waitForSelector($passwordNextButton);
+          await popup.click($passwordNextButton);
 
-        // when login popup closes (redirects to original tab)
-        return popup.on("close", () => {
-          resolve();
-        });
+          // when login popup closes (redirects to original tab)
+          return popup.on("close", () => {
+            resolve();
+          });
+        }
+      } catch (error) {
+        reject(error);
       }
     });
   });
