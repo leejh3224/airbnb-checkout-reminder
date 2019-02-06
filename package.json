@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "env $(cat .env) nodemon ./index.ts --exec ts-node",
 		"test": "env $(cat .env) jest --watchAll --verbose=false",
-		"start:ts": "node ./build/",
+		"start:pro": "tsc && node ./build",
 		"build": "tsc"
 	},
 	"dependencies": {

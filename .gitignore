@@ -3,7 +3,9 @@ node_modules/
 # chrome user data directory
 userData/
 
+# env
 .env
+ecosystem.config.js
 
 # error logs
 yarn-error.log
