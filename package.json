@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"license": "MIT",
 	"scripts": {
-		"start": "env $(cat .env) nodemon ./index.ts --exec ts-node",
+		"start": "env $(cat .env) nodemon ./index.ts --exec 'ts-node -r tsconfig-paths/register'",
 		"test": "env $(cat .env) jest --watchAll --verbose=false",
 		"start:pro": "tsc && node ./build",
 		"build": "tsc"
@@ -22,6 +22,7 @@
 		"jest": "^23.6.0",
 		"ts-jest": "^23.10.5",
 		"ts-node": "^7.0.1",
+		"tsconfig-paths": "^3.8.0",
 		"typescript": "^3.2.2"
 	}
 }

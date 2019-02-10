@@ -1,7 +1,11 @@
 import cron from "node-cron";
 
-import { airbnbLogin, getMessage, needsCheckInOrOut } from "lib";
-import { initPuppeteer } from "lib";
+import {
+	airbnbLogin,
+	getMessage,
+	initPuppeteer,
+	needsCheckInOrOut,
+} from "lib";
 
 const checkInReminder = () =>
 	cron.schedule(
