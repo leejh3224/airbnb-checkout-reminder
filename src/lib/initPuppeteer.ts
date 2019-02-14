@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 
 const initPuppeteer = async () => {
 	return puppeteer.launch({
-		headless: false,
+		headless: true,
 		args: [
 			"--no-sandbox",
 			"--disable-gpu",

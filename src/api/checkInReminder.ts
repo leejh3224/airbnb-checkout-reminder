@@ -44,7 +44,7 @@ const checkInReminder = () =>
 				const [page] = await browser.pages();
 
 				const reservations =
-					"https://www.airbnb.co.kr/hosting/reservations/upcoming";
+					"https://www.airbnb.com/hosting/reservations/upcoming";
 				await page.goto(reservations);
 
 				await page.waitForSelector($table);
@@ -62,7 +62,7 @@ const checkInReminder = () =>
 
 					if (checkInOut && checkInOut.required) {
 						const messaging =
-							"https://www.airbnb.co.kr/messaging/qt_for_reservation";
+							"https://www.airbnb.com/messaging/qt_for_reservation";
 
 						const itineraryButton = await row.$($itineraryButton);
 
@@ -84,7 +84,7 @@ const checkInReminder = () =>
 								$sendMessageTextarea,
 								getMessage(checkInOut.type as any),
 							);
-							// await newTab.click($messageSubmitButton)
+							await newTab.click($messageSubmitButton)
 							await newTab.close();
 
 							console.log(

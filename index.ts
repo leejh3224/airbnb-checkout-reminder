@@ -16,8 +16,10 @@ checkInReminder();
 
 app.listen(port, () =>
 	console.log(
-		`listening to ${port}, started: ${new Date(
-			Date.now(),
-		).toLocaleString()}`,
+		`listening to ${port}, started: ${new Intl.DateTimeFormat('ko-KR', {
+  			year: 'numeric', month: 'numeric', day: 'numeric',
+  			hour: 'numeric', minute: 'numeric', second: 'numeric',
+  			hour12: false,
+		}).format(new Date(Date.now()))}`,
 	),
 );

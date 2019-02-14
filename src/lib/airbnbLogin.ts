@@ -15,7 +15,7 @@ async function airbnbLogin(
 	credentials: Credentials,
 ) {
 	const login = "https://www.airbnb.com/login";
-	const home = "https://www.airbnb.co.kr/hosting";
+	const home = "https://www.airbnb.com/hosting";
 
 	// selectors
 	const $emailInput = "#signin_email";
@@ -26,6 +26,7 @@ async function airbnbLogin(
 
 	// For debugging purpose
 	await page.setViewport({ width: 1480, height: 860 });
+
 	await Promise.all([
 		page.goto(login),
 		page.waitForNavigation({ waitUntil: "networkidle0" }),

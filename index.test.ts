@@ -1,17 +1,17 @@
 import puppeteer from "puppeteer";
 
-import { airbnbLogin, getMessage, needsCheckInOrOut } from "./lib";
+import { airbnbLogin, getMessage, needsCheckInOrOut, initPuppeteer } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
-		["1월 13–18, 2019", date, { required: false, type: null }],
-		["1월 13–15, 2019", date, { required: true, type: "check-out" }],
-		["1월 15–17, 2019", date, { required: true, type: "check-in" }],
-		["1월 20–25, 2019", date, { required: false, type: null }],
+		["Jan 13–18, 2019", date, { required: false, type: null }],
+		["Jan 13–15, 2019", date, { required: true, type: "check-out" }],
+		["Jan 15–17, 2019", date, { required: true, type: "check-in" }],
+		["Jan 20–25, 2019", date, { required: false, type: null }],
 		["2019. 01. 02", date, undefined],
-		["2019. 1월 2일", date, undefined],
+		["2019. 02. 20-25", date, undefined],
 	])("input: %s, %s)", (a, b, expected) => {
 		expect(needsCheckInOrOut(a, b)).toEqual(expected);
 	});
@@ -21,21 +21,7 @@ describe("Airbnb message scheduler", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
-		browser = await puppeteer.launch({
-			headless: false,
-			args: [
-				"--no-sandbox",
-				"--disable-gpu",
-				"--disable-dev-shm-usage",
-				"--disable-setuid-sandbox",
-				"--no-first-run",
-				"--no-zygote",
-				"--single-process",
-			],
-
-			// reuse user profile session
-			userDataDir: "./userData",
-		});
+		browser = await initPuppeteer();
 
 		// puppeteer test takes longer time than usual tests.
 		// so override default jest timeout not to interrupt test
@@ -55,7 +41,7 @@ describe("Airbnb message scheduler", () => {
 		expect(loginResult).toBe(true);
 	});
 
-	it.skip("should collect reservation codes", async (done) => {
+	it("should collect reservation codes", async (done) => {
 		await airbnbLogin.bind(browser)({
 			email: process.env.email as string,
 			password: process.env.password as string,
@@ -74,11 +60,13 @@ describe("Airbnb message scheduler", () => {
 		const page = pageList[0];
 
 		const reservations =
-			"https://www.airbnb.co.kr/hosting/reservations/upcoming";
-		await page.goto(reservations);
+			"https://www.airbnb.com/hosting/reservations/upcoming";
+		await page.goto(reservations)
 
-		await page.waitForSelector($table);
+		await page.waitForSelector($table, { timeout: 10000 });
 		const tableRows = await page.$$($row);
+
+		expect(tableRows).not.toBeNull()
 
 		for await (const [_, row] of tableRows.entries()) {
 			const period = await page.evaluate(
@@ -94,14 +82,17 @@ describe("Airbnb message scheduler", () => {
 				$period,
 			);
 
+			expect(period).not.toBeNull()
+
 			const checkInOut = needsCheckInOrOut(
 				period,
-				new Date("2019. 02. 04."),
 			);
+
+			console.log(checkInOut)
 
 			if (checkInOut && checkInOut.required) {
 				const messaging =
-					"https://www.airbnb.co.kr/messaging/qt_for_reservation";
+					"https://www.airbnb.com/messaging/qt_for_reservation";
 
 				const itineraryButton = await row.$($itineraryButton);
 

@@ -8,17 +8,19 @@ const needsCheckInOrOut = (
 	now = new Date(Date.now()),
 ) => {
 	// TODO: needs localization
-	const periodMatcher = /(\d{1,2})월 (\d{1,2})–(\d{1,2}), 20\d{2}/;
+	const periodMatcher = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})–(\d{1,2})/;
 	const matched = periodMatcher.exec(period);
 
 	if (matched) {
 		// map types to number
-		const [, month, startDate, endDate] = matched.map((match) =>
-			Number(match),
+		let [, month, startDate, endDate] = matched.map((match) =>
+			isNaN(Number(match)) ? match : Number(match),
 		);
 
-		// getMonth() returns an index so in order to compare it with real month, add 1
-		const thisMonth = now.getMonth() + 1;
+		// month to number
+		month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Oct", "Nov", "Dec"].findIndex(m => m === month)
+
+		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();
 
 		let messageType = null;
