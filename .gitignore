@@ -13,4 +13,5 @@ yarn-error.log
 # personal note
 notes.md
 
-build/
+# credentials
+service-account-key.json

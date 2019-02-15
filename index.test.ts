@@ -1,6 +1,12 @@
 import puppeteer from "puppeteer";
 
-import { airbnbLogin, getMessage, needsCheckInOrOut, initPuppeteer } from "./src/lib";
+import {
+	airbnbLogin,
+	detectLanguage,
+	initPuppeteer,
+	needsCheckInOrOut,
+	sendMessage,
+} from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
@@ -21,7 +27,7 @@ describe("Airbnb message scheduler", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
-		browser = await initPuppeteer();
+		browser = await initPuppeteer(false);
 
 		// puppeteer test takes longer time than usual tests.
 		// so override default jest timeout not to interrupt test
@@ -42,85 +48,32 @@ describe("Airbnb message scheduler", () => {
 	});
 
 	it("should collect reservation codes", async (done) => {
-		await airbnbLogin.bind(browser)({
-			email: process.env.email as string,
-			password: process.env.password as string,
-		});
+		await sendMessage(browser);
+		done();
+	});
+});
 
-		// selectors
-		const $table = "table._iqk9th";
-		const $row = "table._iqk9th > tbody > tr";
-		const $cell = "._xc2l5fg";
-		const $period = "._9zwlhy1 > ._9zwlhy1";
-		const $sendMessageTextarea = "#send_message_textarea";
-		const $itineraryButton = 'a[href^="/reservation/itinerary"]';
-		const $messageSubmitButton = "button._1u3zpdpw";
-
-		const pageList = await browser.pages();
-		const page = pageList[0];
-
-		const reservations =
-			"https://www.airbnb.com/hosting/reservations/upcoming";
-		await page.goto(reservations)
-
-		await page.waitForSelector($table, { timeout: 10000 });
-		const tableRows = await page.$$($row);
-
-		expect(tableRows).not.toBeNull()
-
-		for await (const [_, row] of tableRows.entries()) {
-			const period = await page.evaluate(
-				(element, cellSelector, periodSelector) => {
-					// reservation period is the 3rd cell
-					const [, , periodCell] = element.querySelectorAll(
-						cellSelector,
-					);
-					return periodCell.querySelector(periodSelector).textContent;
-				},
-				row,
-				$cell,
-				$period,
-			);
-
-			expect(period).not.toBeNull()
-
-			const checkInOut = needsCheckInOrOut(
-				period,
-			);
-
-			console.log(checkInOut)
-
-			if (checkInOut && checkInOut.required) {
-				const messaging =
-					"https://www.airbnb.com/messaging/qt_for_reservation";
-
-				const itineraryButton = await row.$($itineraryButton);
-
-				if (itineraryButton) {
-					const itineraryUrl = await page.evaluate(
-						(element) => element.href,
-						itineraryButton,
-					);
-					const [, reservationCode] = new URL(
-						itineraryUrl,
-					).search.split("=");
-
-					const newTab = await browser.newPage();
-
-					await newTab.goto(`${messaging}/${reservationCode}`);
-					await newTab.waitForSelector($sendMessageTextarea);
-
-					// TODO: before sending a message check if message is already sent
-					await newTab.type(
-						$sendMessageTextarea,
-						getMessage(checkInOut.type as any),
-					);
-					// await newTab.click($messageSubmitButton);
-					await newTab.close();
-				}
-			}
-		}
-
-		await done();
+describe.skip("etc", () => {
+	test.each([
+		[
+			"안녕하세요!숙소 문의드리고싶어서요�혹시 집에서 바다가 보이나요?",
+			"ko",
+		],
+		[
+			"hello, we are coming from germany and looking forward to staying at your place :)",
+			"en",
+		],
+		[
+			"퇴사하고 그 동안 힘들었던 것 다 정리하며 머리 식힐겸 바다가 너무 보고싶어서 처음으로 포항 여행을 가려고 합니다^^ 혼자 가는 만큼 아늑하고 교통 편리한 숙소를 찾게 되었어요! 밖에서 지인도 만날거고 아침에도 일출도 보고 여유롭게 조용히 숙소에서 쉬고도 싶어서 결정하게 되었습니다^^ 잘 부탁드려요! 깨끗하게 사용할게요♡ ",
+			"ko",
+		],
+		[
+			"Hello Joy, we're a couple exploring southern Korea during the hoilday. Thanks for having us!",
+			"en",
+		],
+	])("should detect `%s` to `%s`", async (input, output, done) => {
+		const lang = await detectLanguage(input);
+		expect(lang).toBe(output);
+		done();
 	});
 });
