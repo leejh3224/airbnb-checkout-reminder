@@ -91,7 +91,7 @@ const sendMessage = async (browser: puppeteer.Browser) => {
 					await Promise.all(
 						checkInOutMessages.map((msg) => {
 							newTab.type($sendMessageTextarea, msg);
-							// newTab.click($messageSubmitButton);
+							newTab.click($messageSubmitButton);
 						}),
 					);
 

@@ -7,7 +7,6 @@ const needsCheckInOrOut = (
 	period: string,
 	now = new Date(Date.now()),
 ) => {
-	// TODO: needs localization
 	const periodMatcher = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})–(\d{1,2})/;
 	const matched = periodMatcher.exec(period);
 
@@ -18,7 +17,19 @@ const needsCheckInOrOut = (
 		);
 
 		// month to number
-		month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Oct", "Nov", "Dec"].findIndex(m => m === month)
+		month = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Oct",
+			"Nov",
+			"Dec",
+		].findIndex((m) => m === month);
 
 		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();
