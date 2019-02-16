@@ -16,10 +16,10 @@ const sendMessage = async (browser: puppeteer.Browser) => {
 	const $table = "table._iqk9th";
 	const $row = "table._iqk9th > tbody > tr";
 	const $cell = "._xc2l5fg";
-	const $period = "._9zwlhy1 > ._9zwlhy1";
+	const $period = "td > div > div";
 	const $sendMessageTextarea = "#send_message_textarea";
 	const $itineraryButton = 'a[href^="/reservation/itinerary"]';
-	const $messageSubmitButton = "button._1u3zpdpw";
+	const $messageSubmitButton = 'button[type="submit"]';
 	const $messagesList = ".message-text > .interweave";
 
 	// helpers
@@ -88,14 +88,12 @@ const sendMessage = async (browser: puppeteer.Browser) => {
 					const lang = await detectLanguage(firstGuestMessage);
 					const checkInOutMessages = getMessage(checkInOut.type)[lang];
 
-					await Promise.all(
+					await Promise.all([
 						checkInOutMessages.map((msg) => {
 							newTab.type($sendMessageTextarea, msg);
-							newTab.click($messageSubmitButton);
+							// newTab.click($messageSubmitButton);
 						}),
-					);
-
-					await newTab.close();
+					]);
 				}
 
 				console.log(

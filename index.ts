@@ -5,7 +5,7 @@ import { checkInReminder } from "api";
 const port = 3000;
 const app = express();
 
-checkInReminder("40 7 * * *");
+checkInReminder("56 10 * * *");
 
 app.listen(port, () =>
 	console.log(

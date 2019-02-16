@@ -6,6 +6,7 @@ import {
 	initPuppeteer,
 	needsCheckInOrOut,
 	sendMessage,
+	getMessage,
 } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
@@ -23,7 +24,7 @@ describe.skip("needsCheckInOrOut", () => {
 	});
 });
 
-describe("Airbnb message scheduler", () => {
+describe.skip("Airbnb message scheduler", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
@@ -47,7 +48,7 @@ describe("Airbnb message scheduler", () => {
 		expect(loginResult).toBe(true);
 	});
 
-	it("should collect reservation codes", async (done) => {
+	it.skip("should collect reservation codes", async (done) => {
 		await sendMessage(browser);
 		done();
 	});
@@ -77,3 +78,49 @@ describe.skip("etc", () => {
 		done();
 	});
 });
+
+describe('send message test', () => {
+	let browser: puppeteer.Browser;
+
+	beforeEach(async () => {
+		browser = await initPuppeteer(false);
+
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
+	});
+
+	afterEach(async () => {
+		// await browser.close();
+	});
+
+	it('test', async () => {
+		const url = "https://www.airbnb.com/messaging/qt_for_reservation/HMPSHBSPMJ"
+
+		const $sendMessageTextarea = "#send_message_textarea";
+		const $messageSubmitButton = 'button[type="submit"]';
+		const $messagesList = ".message-text > .interweave";
+
+
+		const [page] = await browser.pages()
+
+		page.goto(url)
+
+		await page.waitForSelector($sendMessageTextarea);
+
+		const [element] = (await page.$$($messagesList)).slice(-1);
+		const firstGuestMessage = await page.evaluate(
+			(element) => element.textContent,
+			element,
+		);
+		const lang = await detectLanguage(firstGuestMessage);
+		const checkInOutMessages = getMessage("check-in")[lang];
+
+		await Promise.all([
+			checkInOutMessages.map((msg) => {
+				page.type($sendMessageTextarea, msg);
+				page.click($messageSubmitButton);
+			}),
+		]);
+	})
+})
