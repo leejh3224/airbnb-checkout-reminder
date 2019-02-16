@@ -1,12 +1,12 @@
-/**
- * check if given period requires check in/out today
- * @param period - string represents reservation period
- * ex) 1월 1-3, 2019
- */
 const needsCheckInOrOut = (
 	period: string,
 	now = new Date(Date.now()),
-) => {
+):
+	| {
+			type: "check-in" | "check-out" | undefined
+			required: boolean,
+	  }
+	| undefined => {
 	const periodMatcher = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})–(\d{1,2})/;
 	const matched = periodMatcher.exec(period);
 
@@ -34,7 +34,7 @@ const needsCheckInOrOut = (
 		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();
 
-		let messageType = null;
+		let messageType: "check-in" | "check-out" | undefined;
 
 		if (month === thisMonth && startDate === currentDate) {
 			messageType = "check-in";

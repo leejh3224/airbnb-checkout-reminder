@@ -13,7 +13,7 @@ const detectLanguage = async (input: string) => {
 	]: any = await translate.detect(input);
 
 	if (detections.length && detections[0].length) {
-		return detections[0][0].language;
+		return detections[0][0].language === "ko" ? "ko" : "en";
 	}
 
 	return "ko";

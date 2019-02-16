@@ -4,9 +4,9 @@ import {
 	airbnbLogin,
 	detectLanguage,
 	initPuppeteer,
+	main,
 	needsCheckInOrOut,
 	sendMessage,
-	getMessage,
 } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
@@ -24,7 +24,7 @@ describe.skip("needsCheckInOrOut", () => {
 	});
 });
 
-describe.skip("Airbnb message scheduler", () => {
+describe("Airbnb message scheduler", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
@@ -48,9 +48,8 @@ describe.skip("Airbnb message scheduler", () => {
 		expect(loginResult).toBe(true);
 	});
 
-	it.skip("should collect reservation codes", async (done) => {
-		await sendMessage(browser);
-		done();
+	it.skip("should test main", async () => {
+		await main(browser, true);
 	});
 });
 
@@ -72,6 +71,7 @@ describe.skip("etc", () => {
 			"Hello Joy, we're a couple exploring southern Korea during the hoilday. Thanks for having us!",
 			"en",
 		],
+		["Qu'est-ce que vous faites?", "en"], // detect french then reply english
 	])("should detect `%s` to `%s`", async (input, output, done) => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);
@@ -79,7 +79,7 @@ describe.skip("etc", () => {
 	});
 });
 
-describe('send message test', () => {
+describe.skip("send message test", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
@@ -94,33 +94,37 @@ describe('send message test', () => {
 		// await browser.close();
 	});
 
-	it('test', async () => {
-		const url = "https://www.airbnb.com/messaging/qt_for_reservation/HMPSHBSPMJ"
+	it("test", async () => {
+		try {
+			const reservationCode = "HMPSHBSPMJ";
 
-		const $sendMessageTextarea = "#send_message_textarea";
-		const $messageSubmitButton = 'button[type="submit"]';
-		const $messagesList = ".message-text > .interweave";
+			const [page] = await browser.pages();
 
+			await sendMessage.bind(page)({
+				reservationCode,
+				type: "check-in",
+				isTest: false,
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	});
+});
 
-		const [page] = await browser.pages()
+// describe.skip("test", async () => {
+// 	try {
+// 		const gmail = google.gmail({
+// 			version: "v1",
+// 			auth: process.env.GOOGLE_API_KEY,
+// 		});
 
-		page.goto(url)
+// 		const r = await gmail.users.labels.get({
+// 			id: process.env.AIRBNB_MAIL_LABEL_ID,
+// 			userId: process.env.email,
+// 		});
 
-		await page.waitForSelector($sendMessageTextarea);
-
-		const [element] = (await page.$$($messagesList)).slice(-1);
-		const firstGuestMessage = await page.evaluate(
-			(element) => element.textContent,
-			element,
-		);
-		const lang = await detectLanguage(firstGuestMessage);
-		const checkInOutMessages = getMessage("check-in")[lang];
-
-		await Promise.all([
-			checkInOutMessages.map((msg) => {
-				page.type($sendMessageTextarea, msg);
-				page.click($messageSubmitButton);
-			}),
-		]);
-	})
-})
+// 		console.log(r);
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// });
