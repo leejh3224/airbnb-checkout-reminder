@@ -64,13 +64,14 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 					await page.click($me);
 
 					await page.waitForFunction(
-						(text: string) => {
+						(text: string, $header: string) => {
 							return (
 								document.querySelector($header)!.textContent !== text
 							);
 						},
 						{}, // options
 						"Choose an account",
+						$header
 					);
 
 					await page.waitForSelector($password);

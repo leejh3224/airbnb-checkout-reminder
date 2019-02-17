@@ -19,71 +19,74 @@ const answerToReservation = (schedule: string) => {
 				hour === CHECK_IN_REMINDER_START_HOUR &&
 				minutes >= CHECK_IN_REMINDER_START_MINUTES - 10
 			) {
-				const browser = await initPuppeteer();
-				const oauth2Client = await getOAuthClient(browser);
+				return
+			}
 
-				const gmail = await google.gmail({
-					version: "v1",
-					auth: oauth2Client as any,
+
+			const browser = await initPuppeteer();
+			const oauth2Client = await getOAuthClient(browser);
+
+			const gmail = await google.gmail({
+				version: "v1",
+				auth: oauth2Client as any,
+			});
+
+			const {
+				data: { messages },
+			} = await gmail.users.messages.list({
+				userId: "me",
+				labelIds: [process.env.AIRBNB_MAIL_LABEL_ID],
+				maxResults: 10,
+			} as any);
+
+			if (!messages) {
+				console.log("no message found!");
+				return;
+			}
+
+			for await (const msg of messages as any) {
+				const {
+					data: { payload },
+				} = await gmail.users.messages.get({
+					id: msg.id,
+					userId: "me",
+					format: "full",
 				});
 
-				const {
-					data: { messages },
-				} = await gmail.users.messages.list({
-					userId: "me",
-					labelIds: [process.env.AIRBNB_MAIL_LABEL_ID],
-					maxResults: 10,
-				} as any);
+				const body = Buffer.from(
+					payload!.parts![0]!.body!.data as string,
+					"base64",
+				).toString("utf-8");
 
-				if (!messages) {
-					console.log("no message found!");
-					return;
-				}
+				const title = payload!.headers!.find(
+					(v) => v.name === "Subject",
+				)!.value;
 
-				for await (const msg of messages as any) {
-					const {
-						data: { payload },
-					} = await gmail.users.messages.get({
-						id: msg.id,
-						userId: "me",
-						format: "full",
-					});
+				if (title!.includes("예약 확정")) {
+					const page = await browser.newPage();
 
-					const body = Buffer.from(
-						payload!.parts![0]!.body!.data as string,
-						"base64",
-					).toString("utf-8");
+					const matchReservationCode = /[A-Z0-9]{10}/;
+					const matched = body.match(matchReservationCode);
 
-					const title = payload!.headers!.find(
-						(v) => v.name === "Subject",
-					)!.value;
+					if (matched) {
+						const [reservationCode] = matched;
 
-					if (title!.includes("예약 확정")) {
-						const page = await browser.newPage();
-
-						const matchReservationCode = /[A-Z0-9]{10}/;
-						const matched = body.match(matchReservationCode);
-
-						if (matched) {
-							const [reservationCode] = matched;
-
-							await sendMessage.bind(page)({
-								reservationCode,
-								type: "reservation-confirmed",
-							});
-						} else {
-							throw new Error("본문에서 예약 코드를 찾지 못했습니다.");
-						}
+						await sendMessage.bind(page)({
+							reservationCode,
+							type: "reservation-confirmed",
+						});
+					} else {
+						throw new Error("본문에서 예약 코드를 찾지 못했습니다.");
 					}
-
-					await gmail.users.messages.trash({
-						id: msg.id,
-						userId: "me",
-					});
 				}
 
-				await browser.close();
+				await gmail.users.messages.trash({
+					id: msg.id,
+					userId: "me",
+				});
 			}
+
+			await browser.close();
 		} catch (error) {
 			console.log(error);
 		}

@@ -1,4 +1,5 @@
 import * as puppeteer from "puppeteer";
+import { google } from "googleapis"
 
 import {
 	airbnbLogin,
@@ -6,6 +7,7 @@ import {
 	initPuppeteer,
 	needsCheckInOrOut,
 	sendMessage,
+	getOAuthClient
 } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
@@ -71,32 +73,5 @@ describe.skip("detect language", () => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);
 		done();
-	});
-});
-
-describe.skip("send message test", () => {
-	let browser: puppeteer.Browser;
-
-	beforeEach(async () => {
-		browser = await initPuppeteer(false);
-
-		// puppeteer test takes longer time than usual tests.
-		// so override default jest timeout not to interrupt test
-		jest.setTimeout(150000);
-	});
-
-	afterEach(async () => {
-		// await browser.close();
-	});
-
-	it("test send message", async () => {
-		const reservationCode = "HMPSHBSPMJ";
-
-		const [page] = await browser.pages();
-
-		await sendMessage.bind(page)({
-			reservationCode,
-			type: "reservation-confirmed",
-		});
 	});
 });

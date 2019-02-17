@@ -20,4 +20,4 @@ export const OAUTH_SERVER_PORT = 3001;
 // schedules
 export const CHECK_IN_REMINDER_START_HOUR = 7;
 export const CHECK_IN_REMINDER_START_MINUTES = 40;
-export const ANSWER_TO_RESERVATION_PERIOD = 5;
+export const ANSWER_TO_RESERVATION_PERIOD = 10;
