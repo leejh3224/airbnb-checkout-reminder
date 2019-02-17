@@ -1,4 +1,11 @@
-import puppeteer from "puppeteer";
+const { PubSub } = require("@google-cloud/pubsub");
+import * as fs from "fs";
+import { google } from "googleapis";
+import * as http from "http";
+import * as path from "path";
+import * as puppeteer from "puppeteer";
+import destroyer from "server-destroy";
+import * as url from "url";
 
 import {
 	airbnbLogin,
@@ -24,7 +31,7 @@ describe.skip("needsCheckInOrOut", () => {
 	});
 });
 
-describe("Airbnb message scheduler", () => {
+describe.skip("Airbnb message scheduler", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
@@ -111,20 +118,156 @@ describe.skip("send message test", () => {
 	});
 });
 
-// describe.skip("test", async () => {
-// 	try {
-// 		const gmail = google.gmail({
-// 			version: "v1",
-// 			auth: process.env.GOOGLE_API_KEY,
-// 		});
+describe("test", async () => {
+	let browser: puppeteer.Browser;
 
-// 		const r = await gmail.users.labels.get({
-// 			id: process.env.AIRBNB_MAIL_LABEL_ID,
-// 			userId: process.env.email,
-// 		});
+	beforeEach(async () => {
+		browser = await initPuppeteer(false);
 
-// 		console.log(r);
-// 	} catch (error) {
-// 		console.log(error);
-// 	}
-// });
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
+	});
+
+	afterEach(async () => {
+		// await browser.close();
+	});
+
+	it("test", async () => {
+		const keyPath = path.resolve("oauth2.keys.json");
+		let keys: any = { redirect_uris: [""] };
+		if (fs.existsSync(keyPath)) {
+			keys = require(keyPath).web;
+		}
+
+		async function authenticate(scopes: any) {
+			return new Promise((resolve, reject) => {
+				const oauth2Client = new google.auth.OAuth2(
+					keys.client_id,
+					keys.client_secret,
+					keys.redirect_uris[0],
+				);
+
+				const authorizeUrl = oauth2Client.generateAuthUrl({
+					access_type: "offline",
+					scope: scopes.join(" "),
+				});
+
+				const server = http
+					.createServer(async (req, res) => {
+						try {
+							if (req.url!.indexOf("/oauth2callback") > -1) {
+								const qs = new url.URL(
+									req.url as string,
+									"http://localhost:3001",
+								).searchParams;
+								res.end(
+									"Authentication successful! Please return to the console.",
+								);
+								server.close();
+								const { tokens } = await oauth2Client.getToken(qs.get(
+									"code",
+								) as any);
+								oauth2Client.credentials = tokens;
+								resolve(oauth2Client);
+							}
+						} catch (e) {
+							reject(e);
+						}
+					})
+					.listen(3001, async () => {
+						const [page] = await browser.pages();
+						await page.goto(authorizeUrl);
+						await page.waitForSelector("content li:first-child");
+						await page.waitFor(3000);
+						await page.click("content li:first-child");
+						await page.keyboard.type("Enter");
+
+						await page.waitForFunction(
+							(text: string) => {
+								return (
+									document.querySelector("#headingText > content")!
+										.textContent !== text
+								);
+							},
+							{}, // options
+							"Choose an account",
+						);
+
+						await page.waitForSelector('input[type="password"]');
+						await page.type('input[type="password"]', process.env
+							.password as string);
+						await page.click("#passwordNext");
+						await page.waitForNavigation();
+					});
+
+				destroyer(server);
+			});
+		}
+
+		const scopes = [
+			"https://www.googleapis.com/auth/gmail.modify",
+			"https://www.googleapis.com/auth/gmail.readonly",
+			"https://www.googleapis.com/auth/gmail.metadata",
+		];
+
+		const oauth2Client = await authenticate(scopes);
+
+		const gmail = await google.gmail({
+			version: "v1",
+			auth: oauth2Client as any,
+		});
+
+		const topicName = `projects/${
+			process.env.GOOGLE_PROJECT_ID
+		}/topics/new-airbnb-mail`;
+		const subscriptionName = `projects/${
+			process.env.GOOGLE_PROJECT_ID
+		}/subscriptions/new-airbnb-mail-sub`;
+
+		const { data } = await gmail.users.watch({
+			userId: "me",
+			requestBody: {
+				labelIds: [process.env.AIRBNB_MAIL_LABEL_ID],
+				labelFilterAction: "include",
+				topicName,
+			},
+		} as any);
+
+		const pubsub = new PubSub();
+
+		await pubsub
+			.topic(topicName)
+			.publish(Buffer.from(JSON.stringify(data)));
+
+		const subscription = pubsub.subscription(subscriptionName);
+
+		subscription.on("message", (msg: any) => {
+			const d = JSON.parse(msg.data);
+			console.log(d);
+			msg.ack();
+		});
+
+		// const { data } = await gmail.users.messages.list({
+		// 	userId: "me",
+		// 	labelIds: [process.env.AIRBNB_MAIL_LABEL_ID],
+		// 	maxResults: 15,
+		// } as any);
+
+		// for await (const msg of data.messages as any) {
+		// 	const { data: data2 } = await gmail.users.messages.get({
+		// 		id: msg.id,
+		// 		userId: "me",
+		// 		format: "metadata",
+		// 	});
+
+		// 	const title = data2!.payload!.headers!.find(
+		// 		(v) => v.name === "Subject",
+		// 	)!.value;
+
+		// 	if (title.includes("예약 확정")) {
+		// 		// send message
+		// 	}
+		// }
+	});
+});

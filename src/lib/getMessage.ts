@@ -26,16 +26,19 @@ const getMessage = (
 			"check-out": {
 				ko: [
 					stripIndents`
-            체크아웃은 12시까지 해주시면 돼요.
+            여행은 즐거우셨나요?
+            체크아웃은 11시까지 해주시면 돼요.
+            퇴실 전에 기본적인 뒷정리 부탁드리고,
             혹시 놓고가시는 물건이 없는지 한번 더 체크해보세요~
+
             소중한 추억을 만드는데 저희가 도움이 되었기를 바랍니다.
             안녕히 가세요 ^^`,
 				],
 				en: [
 					stripIndents`
             Did you enjoyed the trip?
-            You should check out until 12:00 PM.
-            Please make sure you take all your belongings with you when you leave the room.
+            You should check out until 11:00 AM.
+            Before you leave, please clean up and make sure you take all your belongings with you.
             Thank you. Have a nice day :)`,
 				],
 			},
