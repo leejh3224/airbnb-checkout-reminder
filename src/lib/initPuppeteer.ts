@@ -10,7 +10,7 @@ const initPuppeteer = async (headless: boolean = true) => {
 			"--disable-setuid-sandbox",
 			"--no-first-run",
 			"--no-zygote",
-			"--single-process",
+			// "--single-process",
 		],
 
 		// reuse user profile session

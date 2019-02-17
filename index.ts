@@ -1,11 +1,19 @@
 import express from "express";
 
-import { checkInReminder } from "api";
+import { answerToReservation, checkInReminder } from "api";
+import {
+	ANSWER_TO_RESERVATION_PERIOD,
+	CHECK_IN_REMINDER_START_HOUR,
+	CHECK_IN_REMINDER_START_MINUTES,
+} from "lib/constants";
 
 const port = 3000;
 const app = express();
 
-checkInReminder("56 10 * * *");
+checkInReminder(
+	`${CHECK_IN_REMINDER_START_MINUTES} ${CHECK_IN_REMINDER_START_HOUR} * * *`,
+);
+answerToReservation(`${ANSWER_TO_RESERVATION_PERIOD} * * *`);
 
 app.listen(port, () =>
 	console.log(

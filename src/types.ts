@@ -1,1 +1,1 @@
-export type checkInOut = "check-in" | "check-out" | undefined;
+export type Message = "check-in" | "check-out" | "reservation-confirmed" | undefined;

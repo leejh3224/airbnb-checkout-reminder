@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import { airbnbLogin, needsCheckInOrOut, sendMessage } from ".";
 
-const main = async (browser: puppeteer.Browser, isTest = false) => {
+const main = async (browser: puppeteer.Browser) => {
 	await airbnbLogin.bind(browser)({
 		email: process.env.email as string,
 		password: process.env.password as string,
@@ -66,7 +66,6 @@ const main = async (browser: puppeteer.Browser, isTest = false) => {
 				await sendMessage.bind(newTab)({
 					reservationCode,
 					type: checkInOut.type,
-					isTest,
 				});
 			}
 

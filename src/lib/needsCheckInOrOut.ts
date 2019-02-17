@@ -1,9 +1,11 @@
+import { Message } from "../types";
+
 const needsCheckInOrOut = (
 	period: string,
 	now = new Date(Date.now()),
 ):
 	| {
-			type: "check-in" | "check-out" | undefined
+			type: Message
 			required: boolean,
 	  }
 	| undefined => {
@@ -34,7 +36,7 @@ const needsCheckInOrOut = (
 		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();
 
-		let messageType: "check-in" | "check-out" | undefined;
+		let messageType: Message;
 
 		if (month === thisMonth && startDate === currentDate) {
 			messageType = "check-in";

@@ -6,3 +6,4 @@ export { default as initPuppeteer } from "./initPuppeteer";
 export { default as main } from "./main";
 export { default as detectLanguage } from "./detectLanguage";
 export { default as sendMessage } from "./sendMessage";
+export { default as getOAuthClient } from "./getOAuthClient";
