@@ -61,7 +61,8 @@ describe("detect language", () => {
 			"en",
 		],
 		["Qu'est-ce que vous faites?", "en"], // detect french then reply english
-		[".", "ko"],
+    [".", "ko"],
+    ["", "ko"]
 	])("should detect `%s` to `%s`", async (input, output, done) => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);
