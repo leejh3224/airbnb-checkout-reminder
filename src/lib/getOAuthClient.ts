@@ -27,6 +27,9 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 				scope: scopes.join(" "),
 			});
 
+			const authSuccessMessage =
+				"Authentication successful! Please return to the console.";
+
 			const server = http
 				.createServer(async (req, res) => {
 					try {
@@ -35,9 +38,7 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 								req.url as string,
 								`http://localhost:${OAUTH_SERVER_PORT}`,
 							).searchParams;
-							res.end(
-								"Authentication successful! Please return to the console.",
-							);
+							res.end(authSuccessMessage);
 							server.close();
 							const { tokens } = await oauth2Client.getToken(qs.get(
 								"code",
@@ -59,19 +60,35 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 					const $nextPageButton = "#passwordNext";
 
 					await page.goto(authorizeUrl);
+
+					const bodyText = await page.evaluate(() => {
+						const body = document.querySelector("body");
+
+						if (body !== null) {
+							return body.textContent;
+						}
+					});
+
+					// already authenticated
+					if (bodyText && bodyText === authSuccessMessage) {
+						return;
+					}
+
 					await page.waitForSelector($me);
 					await page.waitFor(3000);
 					await page.click($me);
 
 					await page.waitForFunction(
-						(text: string, $header: string) => {
-							return (
-								document.querySelector($header)!.textContent !== text
-							);
+						(text: string, headerSelector: string) => {
+							const header = document.querySelector(headerSelector);
+
+							if (header !== null) {
+								return header.textContent !== text;
+							}
 						},
 						{}, // options
 						"Choose an account",
-						$header
+						$header,
 					);
 
 					await page.waitForSelector($password);

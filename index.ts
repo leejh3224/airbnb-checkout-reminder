@@ -13,7 +13,7 @@ const app = express();
 checkInReminder(
 	`${CHECK_IN_REMINDER_START_MINUTES} ${CHECK_IN_REMINDER_START_HOUR} * * *`,
 );
-answerToReservation(`${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
+answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
 
 app.listen(port, () =>
 	console.log(

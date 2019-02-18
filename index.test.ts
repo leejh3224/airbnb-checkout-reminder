@@ -1,13 +1,13 @@
+import MockDate from "mockdate";
 import * as puppeteer from "puppeteer";
-import { google } from "googleapis"
 
 import {
 	airbnbLogin,
+	answerToReservationMain,
 	detectLanguage,
 	initPuppeteer,
 	needsCheckInOrOut,
 	sendMessage,
-	getOAuthClient
 } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
@@ -61,7 +61,9 @@ describe.skip("detect language", () => {
 			"en",
 		],
 		[
-			"퇴사하고 그 동안 힘들었던 것 다 정리하며 머리 식힐겸 바다가 너무 보고싶어서 처음으로 포항 여행을 가려고 합니다^^ 혼자 가는 만큼 아늑하고 교통 편리한 숙소를 찾게 되었어요! 밖에서 지인도 만날거고 아침에도 일출도 보고 여유롭게 조용히 숙소에서 쉬고도 싶어서 결정하게 되었습니다^^ 잘 부탁드려요! 깨끗하게 사용할게요♡ ",
+			`퇴사하고 그 동안 힘들었던 것 다 정리하며 머리 식힐겸 바다가 너무 보고싶어서 처음으로 포항 여행을 가려고 합니다^^
+      혼자 가는 만큼 아늑하고 교통 편리한 숙소를 찾게 되었어요! 밖에서 지인도 만날거고 아침에도 일출도 보고 여유롭게 조용히 숙소에서 쉬고도 싶어서 결정하게 되었습니다^^
+      잘 부탁드려요! 깨끗하게 사용할게요♡`,
 			"ko",
 		],
 		[
@@ -73,5 +75,27 @@ describe.skip("detect language", () => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);
 		done();
+	});
+});
+
+describe("answerToReservation", () => {
+	let browser: puppeteer.Browser;
+
+	beforeEach(async () => {
+		browser = await initPuppeteer(false);
+		MockDate.set(new Date("2019. 02. 18. 18:20:00"));
+
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
+	});
+
+	afterEach(async () => {
+		// await browser.close();
+		MockDate.reset();
+	});
+
+	it("test", async () => {
+		await answerToReservationMain(browser);
 	});
 });
