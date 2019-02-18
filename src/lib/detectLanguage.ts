@@ -1,22 +1,31 @@
 import { Translate } from "@google-cloud/translate";
 
 const detectLanguage = async (input: string) => {
-	const translate = new Translate({
-		projectId: process.env.GOOGLE_PROJECT_ID,
-	});
+	try {
+		const translate = new Translate({
+			projectId: process.env.GOOGLE_PROJECT_ID,
+		});
 
-	const [
-		_,
-		{
-			data: { detections },
-		},
-	]: any = await translate.detect(input);
+		const [
+			_,
+			{
+				data: { detections },
+			},
+		]: any = await translate.detect(input);
 
-	if (detections.length && detections[0].length) {
-		return detections[0][0].language === "ko" ? "ko" : "en";
+		if (detections.length && detections[0].length) {
+			const detected = detections[0][0].language;
+
+			if (detected === "und") {
+				return "ko";
+			}
+			return detected === "ko" ? "ko" : "en";
+		}
+
+		return "ko";
+	} catch (error) {
+		throw new Error(`failed to detect language ${error}`);
 	}
-
-	return "ko";
 };
 
 export default detectLanguage;

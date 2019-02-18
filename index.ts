@@ -1,4 +1,5 @@
 import express from "express";
+import cron from "node-cron";
 
 import { answerToReservation, checkInReminder } from "api";
 import {
@@ -10,10 +11,10 @@ import {
 const port = 3000;
 const app = express();
 
-checkInReminder(
-	`${CHECK_IN_REMINDER_START_MINUTES} ${CHECK_IN_REMINDER_START_HOUR} * * *`,
-);
-answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
+// checkInReminder(
+// 	`${CHECK_IN_REMINDER_START_MINUTES} ${CHECK_IN_REMINDER_START_HOUR} * * *`,
+// );
+// answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
 
 app.listen(port, () =>
 	console.log(

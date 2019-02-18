@@ -1,4 +1,4 @@
-import { google } from "googleapis";
+import { gmail_v1, google } from "googleapis";
 import puppeteer from "puppeteer";
 
 import { getOAuthClient, sendMessage } from ".";
@@ -104,14 +104,21 @@ const answerToReservationMain = async (
 									reservationCode,
 									type: "reservation-confirmed",
 								});
+
+								await gmail.users.messages.send({
+									userId: "me",
+									requestBody: {
+										raw: Buffer.from(`[성공] ${title}`).toString(
+											"base64",
+										),
+									},
+								} as gmail_v1.Params$Resource$Users$Messages$Send);
 							} else {
-								console.log("reservation code not found!");
+								throw new Error("reservation code not found!");
 							}
 						}
 					}
 				}
-			} else {
-				console.log("no message since last run");
 			}
 		}
 
