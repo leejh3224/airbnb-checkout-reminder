@@ -28,22 +28,18 @@ const getMessage = (
             오늘은 체크인하는 날이에요.
             3시부터 체크인해주시면 돼요.
             다시 한번 셀프 체크인 가이드를 확인해주세요.
-            즐거운 여행이 되시길 바래요~!!`,
-					stripIndents`
-            이 링크를 누르면 셀프 체크인 가이드로 이동됩니다.
+            즐거운 여행이 되시길 바래요~!!
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-            `,
+          `,
 				],
 				en: [
 					stripIndents`
             It's check in day today!
             Please check in after 3:00 PM.
             Check out self check in guide to know how to do check in.
-            Have a nice trip :)`,
-					stripIndents`
-            You can checkout self check in guide in the link below.
+            Have a nice trip :)
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-            `,
+          `,
 				],
 			},
 			"check-out": {
@@ -59,7 +55,7 @@ const getMessage = (
 				],
 				en: [
 					stripIndents`
-            Did you enjoyed the trip?
+            Did you enjoy the trip?
             You should check out until 11:00 AM.
             Before you leave, please clean up and make sure you take all your belongings with you.
             Thank you. Have a nice day :)`,
