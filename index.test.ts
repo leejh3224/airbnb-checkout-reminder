@@ -1,3 +1,5 @@
+import { gmail_v1, google } from "googleapis";
+import { Base64 } from "js-base64";
 import MockDate from "mockdate";
 import * as puppeteer from "puppeteer";
 
@@ -5,6 +7,7 @@ import {
 	airbnbLogin,
 	answerToReservationMain,
 	detectLanguage,
+	getOAuthClient,
 	initPuppeteer,
 	needsCheckInOrOut,
 	sendMessage,
@@ -50,7 +53,7 @@ describe.skip("Airbnb message scheduler", () => {
 	});
 });
 
-describe("detect language", () => {
+describe.skip("detect language", () => {
 	test.each([
 		[
 			"안녕하세요!숙소 문의드리고싶어서요�혹시 집에서 바다가 보이나요?",
@@ -61,8 +64,8 @@ describe("detect language", () => {
 			"en",
 		],
 		["Qu'est-ce que vous faites?", "en"], // detect french then reply english
-    [".", "ko"],
-    ["", "ko"]
+		[".", "ko"],
+		["", "ko"],
 	])("should detect `%s` to `%s`", async (input, output, done) => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);

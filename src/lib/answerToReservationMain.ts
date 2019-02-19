@@ -104,15 +104,6 @@ const answerToReservationMain = async (
 									reservationCode,
 									type: "reservation-confirmed",
 								});
-
-								await gmail.users.messages.send({
-									userId: "me",
-									requestBody: {
-										raw: Buffer.from(`[성공] ${title}`).toString(
-											"base64",
-										),
-									},
-								} as gmail_v1.Params$Resource$Users$Messages$Send);
 							} else {
 								throw new Error("reservation code not found!");
 							}
