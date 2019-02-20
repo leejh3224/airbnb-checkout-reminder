@@ -94,7 +94,7 @@ describe.skip("answerToReservation", () => {
 	});
 });
 
-describe.skip("gmail", () => {
+describe("gmail", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
@@ -122,10 +122,11 @@ describe.skip("gmail", () => {
 				raw: Base64.encodeURI(
 					`From: <${process.env.email}>\n` +
 						`To: <${process.env.email}>\n` +
-						"Subject: re-world\n" +
+						`Subject: =?utf-8?B?${Base64.encode(
+							"한글제목으로 보낸다.",
+						)}?=\n` +
 						"Date:\n" +
-						"Message-ID:\n" +
-						"dgdgdgd",
+						"Message-ID:\n",
 				),
 			},
 		} as gmail_v1.Params$Resource$Users$Messages$Send);
