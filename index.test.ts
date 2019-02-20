@@ -10,7 +10,6 @@ import {
 	getOAuthClient,
 	initPuppeteer,
 	needsCheckInOrOut,
-	sendMessage,
 } from "./src/lib";
 
 describe.skip("needsCheckInOrOut", () => {
@@ -92,5 +91,43 @@ describe.skip("answerToReservation", () => {
 
 	it("test", async () => {
 		await answerToReservationMain(browser);
+	});
+});
+
+describe.skip("gmail", () => {
+	let browser: puppeteer.Browser;
+
+	beforeEach(async () => {
+		browser = await initPuppeteer(false);
+
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
+	});
+
+	afterEach(async () => {
+		// await browser.close();
+	});
+
+	it("gmail", async () => {
+		const oauth2 = await getOAuthClient(browser);
+		const gmail = await google.gmail({
+			version: "v1",
+			auth: oauth2 as any,
+		});
+
+		await gmail.users.messages.send({
+			userId: "me",
+			resource: {
+				raw: Base64.encodeURI(
+					`From: <${process.env.email}>\n` +
+						`To: <${process.env.email}>\n` +
+						"Subject: re-world\n" +
+						"Date:\n" +
+						"Message-ID:\n" +
+						"dgdgdgd",
+				),
+			},
+		} as gmail_v1.Params$Resource$Users$Messages$Send);
 	});
 });
