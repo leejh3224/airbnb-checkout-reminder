@@ -1,5 +1,6 @@
 import { gmail_v1, google } from "googleapis";
 import puppeteer from "puppeteer";
+import { Base64 } from "js-base64";
 
 import { getOAuthClient, sendMessage } from ".";
 import {
