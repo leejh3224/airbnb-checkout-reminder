@@ -6,10 +6,6 @@
 - It responds to certain type of messages like reservation-confirmation
   and sends gmail notification after finishing the job
 
-## Things to improve
-
-- [ ] Use experimental `worker_threads` api. [doc](https://nodejs.org/api/worker_threads.html)
-
 ## Read More
 
 - [medium - English](https://medium.com/@leejh3224/build-airbnb-check-out-reminder-with-node-js-and-puppeteer-ab0791473347)
