@@ -2,13 +2,13 @@
 
 ## Features
 
-- send predefined check-in/check-out messages at a set time
-- responds certain type of messages like reservation-confirmation
-  and send gmail notification after finishing the job
+- It sends predefined check-in/check-out messages at a set time
+- It responds to certain type of messages like reservation-confirmation
+  and sends gmail notification after finishing the job
 
 ## Things to improve
 
-- [] Use experimental `worker_threads` api. [doc](https://nodejs.org/api/worker_threads.html)
+- [ ] Use experimental `worker_threads` api. [doc](https://nodejs.org/api/worker_threads.html)
 
 ## Read More
 
