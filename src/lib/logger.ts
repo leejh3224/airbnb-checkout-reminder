@@ -24,7 +24,7 @@ const logger = createLogger({
           level: ${colorize(`[${info.level.toUpperCase()}]`)}
           message: ${info.message}
           timestamp: ${chalk.bold(timestamp)}
-          ${info.stack && `stack: ${info.stack}`}
+          ${info.stack ? `stack: ${info.stack}` : ""}
         `;
 			}),
 		}),
