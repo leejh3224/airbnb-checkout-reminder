@@ -77,14 +77,13 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 					});
 				}
 
-				logger.log(
-					"info",
+				logger.info(
 					`done sending message for ${period} ${reservationCode}`,
 				);
 			}
 		}
 	} catch (error) {
-		logger.log("error", error);
+		logger.error(error);
 	}
 };
 

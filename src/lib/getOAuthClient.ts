@@ -98,7 +98,7 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 						await page.click($nextPageButton);
 						await page.waitFor(3000);
 					} catch (error) {
-						logger.log("error", error);
+						logger.error(error);
 					}
 				});
 

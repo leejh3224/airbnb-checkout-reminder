@@ -60,7 +60,7 @@ async function sendMessage(
 			}
 		}
 	} catch (error) {
-		logger.log("error", error);
+		logger.error(error);
 	}
 }
 

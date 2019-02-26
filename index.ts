@@ -16,4 +16,4 @@ checkInReminder(
 );
 answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
 
-app.listen(port, () => logger.log("info", `listening to ${port}`));
+app.listen(port, () => logger.info(`listening to ${port}`));

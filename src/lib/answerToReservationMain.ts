@@ -100,7 +100,7 @@ const answerToReservationMain = async (
 								if (matched) {
 									const [reservationCode] = matched;
 
-									logger.log("info", `sending message for ${title}!`);
+									logger.info(`sending message for ${title}!`);
 
 									await sendMessage.bind(page)({
 										reservationCode,
@@ -128,7 +128,7 @@ const answerToReservationMain = async (
 										},
 									} as gmail_v1.Params$Resource$Users$Messages$Send);
 								} else {
-									logger.log("error", "reservation code not found!");
+									logger.error("reservation code not found!");
 								}
 							}
 						}
@@ -142,7 +142,7 @@ const answerToReservationMain = async (
 			});
 		}
 	} catch (error) {
-		logger.log("error", error);
+		logger.error(error);
 	}
 };
 
