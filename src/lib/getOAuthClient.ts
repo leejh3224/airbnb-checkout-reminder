@@ -54,12 +54,13 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 					const [page] = await browser.pages();
 
 					// selectors
-					const $me = "content li:first-child";
+					const $me = "content li:first-child > div > div";
 					const $header = "#headingText > content";
 					const $password = 'input[type="password"]';
 					const $nextPageButton = "#passwordNext";
 
 					await page.goto(authorizeUrl);
+					await page.waitForNavigation();
 
 					const bodyText = await page.evaluate(() => {
 						const body = document.querySelector("body");
@@ -75,7 +76,6 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 					}
 
 					await page.waitForSelector($me);
-					await page.waitFor(3000);
 					await page.click($me);
 
 					await page.waitForFunction(

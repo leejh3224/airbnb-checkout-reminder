@@ -42,7 +42,7 @@ describe.skip("Airbnb message scheduler", () => {
 		// await browser.close();
 	});
 
-	it.skip("should handle login", async () => {
+	it("should handle login", async () => {
 		const loginResult = await airbnbLogin.bind(browser)({
 			email: process.env.email as string,
 			password: process.env.password as string,
@@ -94,7 +94,7 @@ describe.skip("answerToReservation", () => {
 	});
 });
 
-describe("gmail", () => {
+describe.skip("gmail", () => {
 	let browser: puppeteer.Browser;
 
 	beforeEach(async () => {
