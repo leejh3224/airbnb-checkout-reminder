@@ -62,7 +62,6 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 						const $nextPageButton = "#passwordNext";
 
 						await page.goto(authorizeUrl);
-						await page.waitFor(3000);
 
 						const bodyText = await page.evaluate(() => {
 							const body = document.querySelector("body");
@@ -75,28 +74,31 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 						// already authenticated
 						if (bodyText && bodyText === authSuccessMessage) {
 							return;
+						} else {
+							await page.waitForSelector($me);
+							await page.click($me);
+
+							await page.waitForFunction(
+								(text: string, headerSelector: string) => {
+									const header = document.querySelector(
+										headerSelector,
+									);
+
+									if (header !== null) {
+										return header.textContent !== text;
+									}
+								},
+								{}, // options
+								"Choose an account",
+								$header,
+							);
+
+							await page.waitForSelector($password);
+							await page.type($password, process.env
+								.password as string);
+							await page.click($nextPageButton);
+							await page.waitFor(3000);
 						}
-
-						await page.waitForSelector($me);
-						await page.click($me);
-
-						await page.waitForFunction(
-							(text: string, headerSelector: string) => {
-								const header = document.querySelector(headerSelector);
-
-								if (header !== null) {
-									return header.textContent !== text;
-								}
-							},
-							{}, // options
-							"Choose an account",
-							$header,
-						);
-
-						await page.waitForSelector($password);
-						await page.type($password, process.env.password as string);
-						await page.click($nextPageButton);
-						await page.waitFor(3000);
 					} catch (error) {
 						logger.error(error);
 					}

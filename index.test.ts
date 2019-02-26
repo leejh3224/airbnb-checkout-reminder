@@ -117,19 +117,19 @@ describe.skip("gmail", () => {
 			auth: oauth2 as any,
 		});
 
-		await gmail.users.messages.send({
-			userId: "me",
-			resource: {
-				raw: Base64.encodeURI(
-					`From: <${process.env.email}>\n` +
-						`To: <${process.env.email}>\n` +
-						`Subject: =?utf-8?B?${Base64.encode(
-							"한글제목으로 보낸다.",
-						)}?=\n` +
-						"Date:\n" +
-						"Message-ID:\n",
-				),
-			},
-		} as gmail_v1.Params$Resource$Users$Messages$Send);
+		// await gmail.users.messages.send({
+		// 	userId: "me",
+		// 	resource: {
+		// 		raw: Base64.encodeURI(
+		// 			`From: <${process.env.email}>\n` +
+		// 				`To: <${process.env.email}>\n` +
+		// 				`Subject: =?utf-8?B?${Base64.encode(
+		// 					"한글제목으로 보낸다.",
+		// 				)}?=\n` +
+		// 				"Date:\n" +
+		// 				"Message-ID:\n",
+		// 		),
+		// 	},
+		// } as gmail_v1.Params$Resource$Users$Messages$Send);
 	});
 });
