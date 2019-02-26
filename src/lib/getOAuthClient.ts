@@ -62,7 +62,7 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 						const $nextPageButton = "#passwordNext";
 
 						await page.goto(authorizeUrl);
-						await page.waitForNavigation();
+						await page.waitForNavigation({ timeout: 5000 });
 
 						const bodyText = await page.evaluate(() => {
 							const body = document.querySelector("body");
