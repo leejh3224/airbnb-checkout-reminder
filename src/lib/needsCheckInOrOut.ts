@@ -1,4 +1,6 @@
 import { Message } from "../types";
+import { TWELVE_MONTHS } from "./constants";
+import logger from "./logger";
 
 const needsCheckInOrOut = (
 	period: string,
@@ -9,7 +11,9 @@ const needsCheckInOrOut = (
 			required: boolean,
 	  }
 	| undefined => {
-	const periodMatcher = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})–(\d{1,2})/;
+	const periodMatcher = new RegExp(
+		`(${TWELVE_MONTHS.join("|")}) (\\d{1,2})–(\\d{1,2})`,
+	);
 	const matched = periodMatcher.exec(period);
 
 	if (matched) {
@@ -19,19 +23,7 @@ const needsCheckInOrOut = (
 		);
 
 		// month to number
-		month = [
-			"Jan",
-			"Feb",
-			"Mar",
-			"Apr",
-			"May",
-			"Jun",
-			"Jul",
-			"Aug",
-			"Oct",
-			"Nov",
-			"Dec",
-		].findIndex((m) => m === month);
+		month = TWELVE_MONTHS.findIndex((m) => m === month);
 
 		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();

@@ -1,5 +1,5 @@
 import * as puppeteer from "puppeteer";
-import { detectLanguage, getMessage } from ".";
+import { detectLanguage, getMessage, logger } from ".";
 import { Message } from "../types";
 
 interface sendMessageParams {
@@ -31,33 +31,36 @@ async function sendMessage(
 			element,
 		);
 
-		const lang = await detectLanguage(firstGuestMessage);
-
 		await this.waitFor(2000);
 		const aptNameElement = await this.$($aptName);
 		const aptNameText = await this.evaluate(
 			(element) => element.textContent,
 			aptNameElement,
 		);
+		const matchesAptName = /#\d{3}/;
 
-		if (/#\d{3}/.exec(aptNameText)) {
+		if (matchesAptName.exec(aptNameText)) {
 			/**
 			 * aptNumber looks something like #4xx #3xx
 			 */
-			const [aptNumber] = aptNameText.match(/#\d{3}/);
+			const [aptNumber] = aptNameText.match(matchesAptName);
 
-			const checkInOutMessages = getMessage(type, {
-				aptNumber: aptNumber.replace("#", ""),
-			})![lang];
+			const lang = await detectLanguage(firstGuestMessage);
 
-			for await (const msg of checkInOutMessages) {
-				await this.type($sendMessageTextarea, msg);
-				await this.waitFor(2000);
-				await this.click($messageSubmitButton);
+			if (lang) {
+				const checkInOutMessages = getMessage(type, {
+					aptNumber: aptNumber.replace("#", ""),
+				})![lang];
+
+				for await (const msg of checkInOutMessages) {
+					await this.type($sendMessageTextarea, msg);
+					await this.waitFor(2000);
+					await this.click($messageSubmitButton);
+				}
 			}
 		}
 	} catch (error) {
-		throw new Error(`failed to send message ${error}`);
+		logger.log("error", error);
 	}
 }
 

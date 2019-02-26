@@ -1,4 +1,10 @@
 import { Translate } from "@google-cloud/translate";
+import { logger } from ".";
+import {
+	LANGUAGE_ENGLISH,
+	LANGUAGE_KOREAN,
+	LANGUAGE_UNKNOWN,
+} from "./constants";
 
 const detectLanguage = async (input: string) => {
 	try {
@@ -16,15 +22,19 @@ const detectLanguage = async (input: string) => {
 		if (detections.length && detections[0].length) {
 			const detected = detections[0][0].language;
 
-			if (detected === "und") {
-				return "ko";
+			if (detected === LANGUAGE_UNKNOWN) {
+				return LANGUAGE_KOREAN;
 			}
-			return detected === "ko" ? "ko" : "en";
+
+			return detected === LANGUAGE_KOREAN
+				? LANGUAGE_KOREAN
+				: LANGUAGE_ENGLISH;
 		}
 
-		return "ko";
+		return LANGUAGE_KOREAN;
 	} catch (error) {
-		throw new Error(`failed to detect language ${error}`);
+		logger.log("error", error);
+		return null;
 	}
 };
 

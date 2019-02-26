@@ -1,5 +1,10 @@
 import puppeteer from "puppeteer";
-import { airbnbLogin, needsCheckInOrOut, sendMessage } from ".";
+import {
+	airbnbLogin,
+	logger,
+	needsCheckInOrOut,
+	sendMessage,
+} from ".";
 
 const checkInReminderMain = async (browser: puppeteer.Browser) => {
 	try {
@@ -72,13 +77,14 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 					});
 				}
 
-				console.log(
+				logger.log(
+					"info",
 					`done sending message for ${period} ${reservationCode}`,
 				);
 			}
 		}
 	} catch (error) {
-		throw new Error(error);
+		logger.log("error", error);
 	}
 };
 

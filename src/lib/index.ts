@@ -10,3 +10,4 @@ export { default as getOAuthClient } from "./getOAuthClient";
 export {
 	default as answerToReservationMain,
 } from "./answerToReservationMain";
+export { default as logger } from "./logger";

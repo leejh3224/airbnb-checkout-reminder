@@ -22,3 +22,21 @@ export const OAUTH_SERVER_PORT = 3001;
 export const CHECK_IN_REMINDER_START_HOUR = 7;
 export const CHECK_IN_REMINDER_START_MINUTES = 40;
 export const ANSWER_TO_RESERVATION_PERIOD = 10;
+
+export const LANGUAGE_KOREAN = "ko";
+export const LANGUAGE_ENGLISH = "en";
+export const LANGUAGE_UNKNOWN = "und";
+
+export const TWELVE_MONTHS = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Oct",
+	"Nov",
+	"Dec",
+];

@@ -1,6 +1,6 @@
 import cron from "node-cron";
 
-import { answerToReservationMain, initPuppeteer } from "lib";
+import { answerToReservationMain, initPuppeteer, logger } from "lib";
 
 const answerToReservation = (schedule: string) => {
 	cron.schedule(schedule, async () => {
@@ -9,7 +9,7 @@ const answerToReservation = (schedule: string) => {
 			await answerToReservationMain(browser);
 			await browser.close();
 		} catch (error) {
-			console.log(error);
+			logger.log("error", error);
 		}
 	});
 };

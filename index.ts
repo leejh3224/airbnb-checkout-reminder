@@ -1,5 +1,5 @@
 import express from "express";
-import cron from "node-cron";
+import { logger } from "lib";
 
 import { answerToReservation, checkInReminder } from "api";
 import {
@@ -16,19 +16,4 @@ checkInReminder(
 );
 answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
 
-app.listen(port, () =>
-	console.log(
-		`listening to ${port}, started: ${new Intl.DateTimeFormat(
-			"ko-KR",
-			{
-				year: "numeric",
-				month: "numeric",
-				day: "numeric",
-				hour: "numeric",
-				minute: "numeric",
-				second: "numeric",
-				hour12: false,
-			},
-		).format(new Date(Date.now()))}`,
-	),
-);
+app.listen(port, () => logger.log("info", `listening to ${port}`));

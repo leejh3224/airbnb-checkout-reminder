@@ -16,10 +16,10 @@ describe.skip("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
-		["Jan 13–18, 2019", date, { required: false, type: null }],
+		["Jan 13–18, 2019", date, { required: false, type: undefined }],
 		["Jan 13–15, 2019", date, { required: true, type: "check-out" }],
 		["Jan 15–17, 2019", date, { required: true, type: "check-in" }],
-		["Jan 20–25, 2019", date, { required: false, type: null }],
+		["Jan 20–25, 2019", date, { required: false, type: undefined }],
 		["2019. 01. 02", date, undefined],
 		["2019. 02. 20-25", date, undefined],
 	])("input: %s, %s)", (a, b, expected) => {
