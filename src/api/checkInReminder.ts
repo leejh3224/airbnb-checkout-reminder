@@ -11,7 +11,7 @@ const checkInReminder = (schedule: string) =>
 				await checkInReminderMain(browser);
 				await browser.close();
 			} catch (error) {
-				logger.log("error", error, new Error(error));
+				logger.log("error", error);
 			}
 		},
 		{

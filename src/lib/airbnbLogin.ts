@@ -1,5 +1,5 @@
-import { logger } from "lib";
 import puppeteer from "puppeteer";
+import { logger } from ".";
 
 interface Credentials {
 	email: string;
@@ -51,7 +51,7 @@ async function airbnbLogin(
 
 		return page.url() === home;
 	} catch (error) {
-		logger.log("error", error, new Error(error));
+		logger.log("error", error);
 	}
 }
 

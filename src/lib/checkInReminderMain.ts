@@ -84,7 +84,7 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 			}
 		}
 	} catch (error) {
-		logger.log("error", error, new Error(error));
+		logger.log("error", error);
 	}
 };
 

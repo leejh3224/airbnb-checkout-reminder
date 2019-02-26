@@ -33,7 +33,7 @@ const detectLanguage = async (input: string) => {
 
 		return LANGUAGE_KOREAN;
 	} catch (error) {
-		logger.log("error", error, new Error(error));
+		logger.log("error", error);
 		return null;
 	}
 };

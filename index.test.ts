@@ -9,6 +9,7 @@ import {
 	detectLanguage,
 	getOAuthClient,
 	initPuppeteer,
+	logger,
 	needsCheckInOrOut,
 } from "./src/lib";
 
