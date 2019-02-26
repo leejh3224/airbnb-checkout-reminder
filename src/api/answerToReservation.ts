@@ -9,7 +9,7 @@ const answerToReservation = (schedule: string) => {
 			await answerToReservationMain(browser);
 			await browser.close();
 		} catch (error) {
-			logger.log("error", error);
+			logger.log("error", error, new Error(error));
 		}
 	});
 };

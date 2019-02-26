@@ -51,7 +51,7 @@ async function airbnbLogin(
 
 		return page.url() === home;
 	} catch (error) {
-		logger.log("error", error);
+		logger.log("error", error, new Error(error));
 	}
 }
 

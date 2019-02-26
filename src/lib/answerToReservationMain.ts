@@ -142,7 +142,7 @@ const answerToReservationMain = async (
 			});
 		}
 	} catch (error) {
-		logger.log("error", error);
+		logger.log("error", error, new Error(error));
 	}
 };
 
