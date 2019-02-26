@@ -6,6 +6,7 @@ import puppeteer from "puppeteer";
 import destroyer from "server-destroy";
 import * as url from "url";
 import { GMAIL_SCOPES, OAUTH_SERVER_PORT } from "./constants";
+import logger from "./logger";
 
 const getOAuthClient = (browser: puppeteer.Browser) => {
 	const keyPath = path.resolve("oauth2.keys.json");
@@ -51,50 +52,54 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 					}
 				})
 				.listen(OAUTH_SERVER_PORT, async () => {
-					const [page] = await browser.pages();
+					try {
+						const [page] = await browser.pages();
 
-					// selectors
-					const $me = "content li:first-child > div > div";
-					const $header = "#headingText > content";
-					const $password = 'input[type="password"]';
-					const $nextPageButton = "#passwordNext";
+						// selectors
+						const $me = "content li:first-child > div > div";
+						const $header = "#headingText > content";
+						const $password = 'input[type="password"]';
+						const $nextPageButton = "#passwordNext";
 
-					await page.goto(authorizeUrl);
-					await page.waitForNavigation();
+						await page.goto(authorizeUrl);
+						await page.waitForNavigation();
 
-					const bodyText = await page.evaluate(() => {
-						const body = document.querySelector("body");
+						const bodyText = await page.evaluate(() => {
+							const body = document.querySelector("body");
 
-						if (body !== null) {
-							return body.textContent;
-						}
-					});
-
-					// already authenticated
-					if (bodyText && bodyText === authSuccessMessage) {
-						return;
-					}
-
-					await page.waitForSelector($me);
-					await page.click($me);
-
-					await page.waitForFunction(
-						(text: string, headerSelector: string) => {
-							const header = document.querySelector(headerSelector);
-
-							if (header !== null) {
-								return header.textContent !== text;
+							if (body !== null) {
+								return body.textContent;
 							}
-						},
-						{}, // options
-						"Choose an account",
-						$header,
-					);
+						});
 
-					await page.waitForSelector($password);
-					await page.type($password, process.env.password as string);
-					await page.click($nextPageButton);
-					await page.waitForNavigation();
+						// already authenticated
+						if (bodyText && bodyText === authSuccessMessage) {
+							return;
+						}
+
+						await page.waitForSelector($me);
+						await page.click($me);
+
+						await page.waitForFunction(
+							(text: string, headerSelector: string) => {
+								const header = document.querySelector(headerSelector);
+
+								if (header !== null) {
+									return header.textContent !== text;
+								}
+							},
+							{}, // options
+							"Choose an account",
+							$header,
+						);
+
+						await page.waitForSelector($password);
+						await page.type($password, process.env.password as string);
+						await page.click($nextPageButton);
+						await page.waitFor(3000);
+					} catch (error) {
+						logger.log("error", error);
+					}
 				});
 
 			destroyer(server);
