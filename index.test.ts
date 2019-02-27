@@ -20,9 +20,16 @@ describe.skip("needsCheckInOrOut", () => {
 		["Jan 13–18, 2019", date, { required: false, type: undefined }],
 		["Jan 13–15, 2019", date, { required: true, type: "check-out" }],
 		["Jan 15–17, 2019", date, { required: true, type: "check-in" }],
-		["Jan 20–25, 2019", date, { required: false, type: undefined }],
-		["2019. 01. 02", date, undefined],
-		["2019. 02. 20-25", date, undefined],
+		[
+			"Jan 15–Feb 1, 2019",
+			date,
+			{ required: true, type: "check-in" },
+		],
+		[
+			"Dec 31–Jan 15, 2019",
+			date,
+			{ required: true, type: "check-out" },
+		],
 	])("input: %s, %s)", (a, b, expected) => {
 		expect(needsCheckInOrOut(a, b)).toEqual(expected);
 	});
