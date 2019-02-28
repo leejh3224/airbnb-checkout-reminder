@@ -5,7 +5,6 @@ import { TWELVE_MONTHS } from "./constants";
 const mapToNumber = (numString: string[]) => {
 	return numString.map((str) => {
 		const num = Number(str);
-
 		return isNaN(num) ? str : num;
 	});
 };
@@ -23,6 +22,7 @@ const needsCheckInOrOut = (
 			required: boolean,
 	  }
 	| undefined => {
+	// Catches Feb 1-2, Feb 3-Mar 1 like strings
 	const periodMatcher = new RegExp(
 		`(${TWELVE_MONTHS.join("|")}) (\\d{1,2})–(${TWELVE_MONTHS.join(
 			"|",
@@ -31,7 +31,6 @@ const needsCheckInOrOut = (
 	const matched = periodMatcher.exec(period);
 
 	if (matched) {
-		// map types to number
 		let [, month, startDate, month2, endDate] = mapToNumber(matched);
 
 		if (month2 && typeof month2 === "string") {
@@ -45,25 +44,22 @@ const needsCheckInOrOut = (
 		const thisMonth = now.getMonth();
 		const currentDate = now.getDate();
 
-		const startsThisMonth =
+		const willCheckIn =
 			month === thisMonth && startDate === currentDate;
-		const endsThisMonth =
-			month === thisMonth && endDate === currentDate;
-		const endsNextMonth =
-			month2 === thisMonth && endDate === currentDate;
+		const willCheckOut =
+			(month === thisMonth || month2 === thisMonth) &&
+			endDate === currentDate;
 
 		let messageType: Message;
 
-		if (startsThisMonth) {
+		if (willCheckIn) {
 			messageType = "check-in";
-		}
-
-		if (endsThisMonth || endsNextMonth) {
+		} else if (willCheckOut) {
 			messageType = "check-out";
 		}
 
 		return {
-			required: startsThisMonth || endsThisMonth || endsNextMonth,
+			required: willCheckIn || willCheckOut,
 			type: messageType,
 		};
 	}

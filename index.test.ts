@@ -1,19 +1,6 @@
-import { gmail_v1, google } from "googleapis";
-import { Base64 } from "js-base64";
-import MockDate from "mockdate";
-import * as puppeteer from "puppeteer";
+import { detectLanguage, needsCheckInOrOut } from "./src/lib";
 
-import {
-	airbnbLogin,
-	answerToReservationMain,
-	detectLanguage,
-	getOAuthClient,
-	initPuppeteer,
-	logger,
-	needsCheckInOrOut,
-} from "./src/lib";
-
-describe.skip("needsCheckInOrOut", () => {
+describe("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
@@ -30,33 +17,8 @@ describe.skip("needsCheckInOrOut", () => {
 			date,
 			{ required: true, type: "check-out" },
 		],
-	])("input: %s, %s)", (a, b, expected) => {
+	])("input: %s", (a, b, expected) => {
 		expect(needsCheckInOrOut(a, b)).toEqual(expected);
-	});
-});
-
-describe.skip("Airbnb message scheduler", () => {
-	let browser: puppeteer.Browser;
-
-	beforeEach(async () => {
-		browser = await initPuppeteer(false);
-
-		// puppeteer test takes longer time than usual tests.
-		// so override default jest timeout not to interrupt test
-		jest.setTimeout(150000);
-	});
-
-	afterEach(async () => {
-		// await browser.close();
-	});
-
-	it("should handle login", async () => {
-		const loginResult = await airbnbLogin.bind(browser)({
-			email: process.env.email as string,
-			password: process.env.password as string,
-		});
-
-		expect(loginResult).toBe(true);
 	});
 });
 
@@ -77,66 +39,5 @@ describe.skip("detect language", () => {
 		const lang = await detectLanguage(input);
 		expect(lang).toBe(output);
 		done();
-	});
-});
-
-describe.skip("answerToReservation", () => {
-	let browser: puppeteer.Browser;
-
-	beforeEach(async () => {
-		browser = await initPuppeteer(false);
-		MockDate.set(new Date("2019. 02. 18. 18:20:00"));
-
-		// puppeteer test takes longer time than usual tests.
-		// so override default jest timeout not to interrupt test
-		jest.setTimeout(150000);
-	});
-
-	afterEach(async () => {
-		// await browser.close();
-		MockDate.reset();
-	});
-
-	it("test", async () => {
-		await answerToReservationMain(browser);
-	});
-});
-
-describe.skip("gmail", () => {
-	let browser: puppeteer.Browser;
-
-	beforeEach(async () => {
-		browser = await initPuppeteer(false);
-
-		// puppeteer test takes longer time than usual tests.
-		// so override default jest timeout not to interrupt test
-		jest.setTimeout(150000);
-	});
-
-	afterEach(async () => {
-		// await browser.close();
-	});
-
-	it("gmail", async () => {
-		const oauth2 = await getOAuthClient(browser);
-		const gmail = await google.gmail({
-			version: "v1",
-			auth: oauth2 as any,
-		});
-
-		// await gmail.users.messages.send({
-		// 	userId: "me",
-		// 	resource: {
-		// 		raw: Base64.encodeURI(
-		// 			`From: <${process.env.email}>\n` +
-		// 				`To: <${process.env.email}>\n` +
-		// 				`Subject: =?utf-8?B?${Base64.encode(
-		// 					"한글제목으로 보낸다.",
-		// 				)}?=\n` +
-		// 				"Date:\n" +
-		// 				"Message-ID:\n",
-		// 		),
-		// 	},
-		// } as gmail_v1.Params$Resource$Users$Messages$Send);
 	});
 });
