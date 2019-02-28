@@ -1,7 +1,10 @@
 import { stripIndents } from "common-tags";
 import { Message } from "../types";
 import {
+	CHECK_IN,
+	CHECK_OUT,
 	MAP_TO_HOUSE_URL,
+	RESERVATION_CONFIRMED,
 	SELF_CHECK_IN_BASE_URL,
 	SELF_CHECK_IN_LINK,
 } from "./constants";
@@ -22,7 +25,7 @@ const getMessage = (
 
 	if (type !== undefined) {
 		return {
-			"check-in": {
+			[CHECK_IN]: {
 				ko: [
 					stripIndents`
             오늘은 체크인하는 날이에요.
@@ -42,7 +45,7 @@ const getMessage = (
           `,
 				],
 			},
-			"check-out": {
+			[CHECK_OUT]: {
 				ko: [
 					stripIndents`
             여행은 즐거우셨나요?
@@ -60,7 +63,7 @@ const getMessage = (
             Thank you. Have a nice day :)`,
 				],
 			},
-			"reservation-confirmed": {
+			[RESERVATION_CONFIRMED]: {
 				ko: [
 					stripIndents`
             안녕하세요~ ^^

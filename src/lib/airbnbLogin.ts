@@ -1,40 +1,29 @@
 import puppeteer from "puppeteer";
 import { logger } from ".";
+import { AIRBNB_HOME_URL, AIRBNB_LOGIN_URL } from "./constants";
 
 interface Credentials {
 	email: string;
 	password: string;
 }
 
-/**
- * handles Airbnb login
- * @param this - bound puppeteer.Browser instance
- * @param credentials - user login credentials, i.e. google email and password
- */
 async function airbnbLogin(
 	this: puppeteer.Browser,
 	credentials: Credentials,
 ) {
 	try {
-		const login = "https://www.airbnb.com/login";
-		const home = "https://www.airbnb.com/hosting";
-
-		// selectors
 		const $emailInput = "#signin_email";
 		const $passwordInput = "#signin_password";
 		const $submitButton = "#user-login-btn";
 
 		const [page] = await this.pages();
 
-		// For debugging purpose
-		await page.setViewport({ width: 1480, height: 860 });
-
 		await Promise.all([
-			page.goto(login),
+			page.goto(AIRBNB_LOGIN_URL),
 			page.waitForNavigation({ waitUntil: "networkidle0" }),
 		]);
 
-		if (page.url() === home) {
+		if (page.url() === AIRBNB_HOME_URL) {
 			return true;
 		}
 
@@ -49,7 +38,7 @@ async function airbnbLogin(
 			]);
 		}
 
-		return page.url() === home;
+		return page.url() === AIRBNB_HOME_URL;
 	} catch (error) {
 		logger.error(error);
 	}

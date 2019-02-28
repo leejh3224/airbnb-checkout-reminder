@@ -7,6 +7,7 @@ import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	CHECK_IN_REMINDER_START_HOUR,
 	CHECK_IN_REMINDER_START_MINUTES,
+	RESERVATION_CONFIRMED,
 } from "./constants";
 import "./DateExt";
 
@@ -88,6 +89,7 @@ const answerToReservationMain = async (
 							).toString("utf-8");
 
 							const keywords = ["예약 확정", "Reservation confirmed"];
+
 							if (
 								typeof title === "string" &&
 								keywords.some((word) => title.includes(word))
@@ -104,7 +106,7 @@ const answerToReservationMain = async (
 
 									await sendMessage.bind(page)({
 										reservationCode,
-										type: "reservation-confirmed",
+										type: RESERVATION_CONFIRMED,
 									});
 
 									await gmail.users.messages.send({

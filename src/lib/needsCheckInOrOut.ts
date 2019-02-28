@@ -1,5 +1,5 @@
 import { Message } from "../types";
-import { TWELVE_MONTHS } from "./constants";
+import { CHECK_IN, CHECK_OUT, TWELVE_MONTHS } from "./constants";
 
 // helpers
 const mapToNumber = (numString: string[]) => {
@@ -53,9 +53,9 @@ const needsCheckInOrOut = (
 		let messageType: Message;
 
 		if (willCheckIn) {
-			messageType = "check-in";
+			messageType = CHECK_IN;
 		} else if (willCheckOut) {
-			messageType = "check-out";
+			messageType = CHECK_OUT;
 		}
 
 		return {

@@ -1,8 +1,14 @@
-export const RESERVATION_CONFIRMED = "예약 확정";
+export const CHECK_IN = "check-in";
+export const CHECK_OUT = "check-out";
+export const RESERVATION_CONFIRMED = "reservation-confirmed";
+
 export const MAP_TO_HOUSE_URL =
 	"https://a0.muscache.com/im/messaging/pictures/005bb2ac-6e18-4db9-abca-544f68af3cac.jpg";
 export const SELF_CHECK_IN_BASE_URL =
 	"https://www.airbnb.com/reservation/check-in-guide";
+export const AIRBNB_LOGIN_URL = "https://www.airbnb.com/login";
+export const AIRBNB_HOME_URL = "https://www.airbnb.com/hosting";
+
 export const SELF_CHECK_IN_LINK: { [key: string]: string } = {
 	201: "27092267",
 	302: "31765470",

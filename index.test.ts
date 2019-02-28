@@ -1,21 +1,18 @@
 import { detectLanguage, needsCheckInOrOut } from "./src/lib";
+import { CHECK_IN, CHECK_OUT } from "./src/lib/constants";
 
 describe("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
 		["Jan 13–18, 2019", date, { required: false, type: undefined }],
-		["Jan 13–15, 2019", date, { required: true, type: "check-out" }],
-		["Jan 15–17, 2019", date, { required: true, type: "check-in" }],
-		[
-			"Jan 15–Feb 1, 2019",
-			date,
-			{ required: true, type: "check-in" },
-		],
+		["Jan 13–15, 2019", date, { required: true, type: CHECK_OUT }],
+		["Jan 15–17, 2019", date, { required: true, type: CHECK_IN }],
+		["Jan 15–Feb 1, 2019", date, { required: true, type: CHECK_IN }],
 		[
 			"Dec 31–Jan 15, 2019",
 			date,
-			{ required: true, type: "check-out" },
+			{ required: true, type: CHECK_OUT },
 		],
 	])("input: %s", (a, b, expected) => {
 		expect(needsCheckInOrOut(a, b)).toEqual(expected);
