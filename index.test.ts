@@ -1,7 +1,18 @@
-import { detectLanguage, needsCheckInOrOut } from "./src/lib";
-import { CHECK_IN, CHECK_OUT } from "./src/lib/constants";
+import puppeteer from "puppeteer";
 
-describe("needsCheckInOrOut", () => {
+import {
+	detectLanguage,
+	initPuppeteer,
+	needsCheckInOrOut,
+	sendMessage,
+} from "./src/lib";
+import {
+	CHECK_IN,
+	CHECK_OUT,
+	RESERVATION_CONFIRMED,
+} from "./src/lib/constants";
+
+describe.skip("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
@@ -37,4 +48,28 @@ describe.skip("detect language", () => {
 		expect(lang).toBe(output);
 		done();
 	});
+});
+
+describe("send message", () => {
+	let browser: puppeteer.Browser;
+
+	beforeEach(async () => {
+		browser = await initPuppeteer(false);
+	});
+
+	afterAll(async () => {
+		await browser.close();
+	});
+
+	test.each([[CHECK_IN], [CHECK_OUT], [RESERVATION_CONFIRMED]])(
+		"case %s",
+		async (type) => {
+			const [page] = (await browser.pages()).slice(-1);
+
+			await sendMessage.bind(page)({
+				reservationCode: "HMPSHBSPMJ",
+				type,
+			});
+		},
+	);
 });
