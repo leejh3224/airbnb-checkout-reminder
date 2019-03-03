@@ -5,7 +5,7 @@ interface Param {
 	body?: string;
 }
 
-const buildMailBody = ({ title, body }: Param) => {
+const buildMailBody = ({ title, body = "" }: Param) => {
 	/**
 	 * Gmail resource.raw shuld follow [RFC 2822](https://tools.ietf.org/html/rfc2822) which is
 	 * 1. It should include From, To, Subject, Date, Message-ID field.
