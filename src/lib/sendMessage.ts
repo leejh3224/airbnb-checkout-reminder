@@ -1,5 +1,5 @@
 import * as puppeteer from "puppeteer";
-import { detectLanguage, getMessage, logger } from ".";
+import { detectLanguage, getMessage, reportError } from ".";
 import { Message } from "../types";
 
 interface sendMessageParams {
@@ -69,7 +69,7 @@ async function sendMessage(
 
 		return true;
 	} catch (error) {
-		logger.error(error);
+		await reportError(this, error);
 	}
 }
 

@@ -8,7 +8,7 @@ import * as url from "url";
 import { GMAIL_SCOPES, OAUTH_SERVER_PORT } from "./constants";
 import logger from "./logger";
 
-const getOAuthClient = (browser: puppeteer.Browser) => {
+const getOAuthClient = (page: puppeteer.Page) => {
 	const keyPath = path.resolve("oauth2.keys.json");
 	let keys: any = { redirect_uris: [""] };
 	if (fs.existsSync(keyPath)) {
@@ -53,8 +53,6 @@ const getOAuthClient = (browser: puppeteer.Browser) => {
 				})
 				.listen(OAUTH_SERVER_PORT, async () => {
 					try {
-						const [page] = await browser.pages();
-
 						// selectors
 						const $me = "content li:first-child > div > div";
 						const $header = "#headingText > content";

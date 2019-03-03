@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { logger } from ".";
+import { logger, reportError } from ".";
 import { AIRBNB_HOME_URL, AIRBNB_LOGIN_URL } from "./constants";
 
 interface Credentials {
@@ -40,7 +40,8 @@ async function airbnbLogin(
 
 		return page.url() === AIRBNB_HOME_URL;
 	} catch (error) {
-		logger.error(error);
+		const [page] = await this.pages();
+		await reportError(page, error);
 	}
 }
 

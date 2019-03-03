@@ -10,3 +10,5 @@ export {
 	default as answerToReservationMain,
 } from "./answerToReservationMain";
 export { default as logger } from "./logger";
+export { default as buildMailBody } from "./buildMailBody";
+export { default as reportError } from "./reportError";

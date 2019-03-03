@@ -1,8 +1,7 @@
 import { gmail_v1, google } from "googleapis";
-import { Base64 } from "js-base64";
 import puppeteer from "puppeteer";
 
-import { getOAuthClient, logger, sendMessage } from ".";
+import { buildMailBody, getOAuthClient, logger, sendMessage } from ".";
 import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	CHECK_IN_REMINDER_START_HOUR,
@@ -10,6 +9,7 @@ import {
 	RESERVATION_CONFIRMED,
 } from "./constants";
 import "./DateExt";
+import reportError from "./reportError";
 
 const answerToReservationMain = async (
 	browser: puppeteer.Browser,
@@ -28,7 +28,8 @@ const answerToReservationMain = async (
 			return;
 		}
 
-		const oauth2Client = await getOAuthClient(browser);
+		const [page] = await browser.pages();
+		const oauth2Client = await getOAuthClient(page);
 
 		const gmail = await google.gmail({
 			version: "v1",
@@ -99,40 +100,24 @@ const answerToReservationMain = async (
 								const matchReservationCode = /[A-Z0-9]{10}/;
 								const matched = body.match(matchReservationCode);
 
-								if (matched) {
-									const [reservationCode] = matched;
+								const [reservationCode] = matched!;
 
-									logger.info(`sending message for ${title}!`);
+								logger.info(`sending message for ${title}!`);
 
-									const done = await sendMessage.bind(page)({
-										reservationCode,
-										type: RESERVATION_CONFIRMED,
-									});
+								const done = await sendMessage.bind(page)({
+									reservationCode,
+									type: RESERVATION_CONFIRMED,
+								});
 
-									if (done) {
-										await gmail.users.messages.send({
-											userId: "me",
-											resource: {
-												/**
-												 * gmail body should be base64-url encoded text.
-												 * And also if you want to use non-ascii characters in mail Subject,
-												 * you should follow the format below.
-												 * Reference: https://ncona.com/2011/06/using-utf-8-characters-on-an-e-mail-subject/
-												 */
-												raw: Base64.encodeURI(
-													`From: <${process.env.email}>\n` +
-														`To: <${process.env.email}>\n` +
-														`Subject: =?utf-8?B?${Base64.encode(
-															`[전송 완료] ${title}`,
-														)}?=\n` +
-														"Date:\n" +
-														"Message-ID:\n",
-												),
-											},
-										} as gmail_v1.Params$Resource$Users$Messages$Send);
-									}
-								} else {
-									logger.error("reservation code not found!");
+								if (done) {
+									await gmail.users.messages.send({
+										userId: "me",
+										resource: {
+											raw: buildMailBody({
+												title: `[전송 완료] ${title}`,
+											}),
+										},
+									} as gmail_v1.Params$Resource$Users$Messages$Send);
 								}
 							}
 						}
@@ -146,7 +131,8 @@ const answerToReservationMain = async (
 			});
 		}
 	} catch (error) {
-		logger.error(error);
+		const [page] = await browser.pages();
+		await reportError(page, error);
 	}
 };
 
