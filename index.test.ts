@@ -53,8 +53,12 @@ describe.skip("detect language", () => {
 describe("send message", () => {
 	let browser: puppeteer.Browser;
 
-	beforeEach(async () => {
+	beforeAll(async () => {
 		browser = await initPuppeteer(false);
+
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
 	});
 
 	afterAll(async () => {
@@ -64,12 +68,16 @@ describe("send message", () => {
 	test.each([[CHECK_IN], [CHECK_OUT], [RESERVATION_CONFIRMED]])(
 		"case %s",
 		async (type) => {
-			const [page] = (await browser.pages()).slice(-1);
+			const page = await browser.newPage();
 
-			await sendMessage.bind(page)({
+			const done = await sendMessage.bind(page)({
 				reservationCode: "HMPSHBSPMJ",
 				type,
 			});
+
+			expect(done).toBe(true);
+
+			await page.close();
 		},
 	);
 });

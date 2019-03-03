@@ -7,15 +7,47 @@ interface sendMessageParams {
 	type: Message;
 }
 
+const getLanguage = async (page: puppeteer.Page) => {
+	const $messagesList = ".message-text > .interweave";
+
+	const [element] = (await page.$$($messagesList)).slice(-1);
+	const firstGuestMessage = await page.evaluate(
+		(element) => element.textContent,
+		element,
+	);
+	return detectLanguage(firstGuestMessage);
+};
+
+const getAptNumber = async (page: puppeteer.Page) => {
+	const $aptName = "section div div div div div";
+
+	const waitUntilAptNameLoads = page.waitForFunction(
+		(selector) => document.querySelector(selector).textContent !== "",
+		{},
+		$aptName,
+	);
+
+	await waitUntilAptNameLoads;
+	const aptNameElement = await page.$($aptName);
+	const aptNameText = await page.evaluate(
+		(element) => element.textContent,
+		aptNameElement,
+	);
+
+	// aptNumber looks something like #4xx #3xx
+	const matchesAptName = /#(\d{3})/;
+	const [, aptNumber] = aptNameText.match(matchesAptName);
+
+	return aptNumber;
+};
+
 async function sendMessage(
 	this: puppeteer.Page,
 	{ reservationCode, type }: sendMessageParams,
-): Promise<void> {
+): Promise<boolean | void> {
 	try {
 		const $sendMessageTextarea = "#send_message_textarea";
 		const $messageSubmitButton = 'button[type="submit"]';
-		const $messagesList = ".message-text > .interweave";
-		const $aptName = "section div div div div div";
 
 		const messaging =
 			"https://www.airbnb.com/messaging/qt_for_reservation";
@@ -23,36 +55,19 @@ async function sendMessage(
 
 		await this.goto(fullUrl);
 
-		const aptNameElement = await this.waitForSelector($aptName);
-		const aptNameText = await this.evaluate(
-			(element) => element.textContent,
-			aptNameElement,
-		);
+		const lang = await getLanguage(this);
+		const aptNumber = await getAptNumber(this);
 
-		// aptNumber looks something like #4xx #3xx
-		const matchesAptName = /#\d{3}/;
+		const checkInOutMessages = getMessage(type, {
+			aptNumber,
+		})![lang!];
 
-		if (matchesAptName.exec(aptNameText)) {
-			const [aptNumber] = aptNameText.match(matchesAptName);
-
-			const [element] = (await this.$$($messagesList)).slice(-1);
-			const firstGuestMessage = await this.evaluate(
-				(element) => element.textContent,
-				element,
-			);
-			const lang = await detectLanguage(firstGuestMessage);
-
-			if (lang) {
-				const checkInOutMessages = getMessage(type, {
-					aptNumber: aptNumber.replace("#", ""),
-				})![lang];
-
-				for await (const msg of checkInOutMessages) {
-					await this.type($sendMessageTextarea, msg);
-					await this.click($messageSubmitButton);
-				}
-			}
+		for await (const msg of checkInOutMessages) {
+			await this.type($sendMessageTextarea, msg);
+			await this.click($messageSubmitButton);
 		}
+
+		return true;
 	} catch (error) {
 		logger.error(error);
 	}

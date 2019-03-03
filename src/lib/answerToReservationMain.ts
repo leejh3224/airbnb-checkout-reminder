@@ -104,31 +104,33 @@ const answerToReservationMain = async (
 
 									logger.info(`sending message for ${title}!`);
 
-									await sendMessage.bind(page)({
+									const done = await sendMessage.bind(page)({
 										reservationCode,
 										type: RESERVATION_CONFIRMED,
 									});
 
-									await gmail.users.messages.send({
-										userId: "me",
-										resource: {
-											/**
-											 * gmail body should be base64-url encoded text.
-											 * And also if you want to use non-ascii characters in mail Subject,
-											 * you should follow the format below.
-											 * Reference: https://ncona.com/2011/06/using-utf-8-characters-on-an-e-mail-subject/
-											 */
-											raw: Base64.encodeURI(
-												`From: <${process.env.email}>\n` +
-													`To: <${process.env.email}>\n` +
-													`Subject: =?utf-8?B?${Base64.encode(
-														`[전송 완료] ${title}`,
-													)}?=\n` +
-													"Date:\n" +
-													"Message-ID:\n",
-											),
-										},
-									} as gmail_v1.Params$Resource$Users$Messages$Send);
+									if (done) {
+										await gmail.users.messages.send({
+											userId: "me",
+											resource: {
+												/**
+												 * gmail body should be base64-url encoded text.
+												 * And also if you want to use non-ascii characters in mail Subject,
+												 * you should follow the format below.
+												 * Reference: https://ncona.com/2011/06/using-utf-8-characters-on-an-e-mail-subject/
+												 */
+												raw: Base64.encodeURI(
+													`From: <${process.env.email}>\n` +
+														`To: <${process.env.email}>\n` +
+														`Subject: =?utf-8?B?${Base64.encode(
+															`[전송 완료] ${title}`,
+														)}?=\n` +
+														"Date:\n" +
+														"Message-ID:\n",
+												),
+											},
+										} as gmail_v1.Params$Resource$Users$Messages$Send);
+									}
 								} else {
 									logger.error("reservation code not found!");
 								}
