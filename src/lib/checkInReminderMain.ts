@@ -3,6 +3,7 @@ import {
 	airbnbLogin,
 	logger,
 	needsCheckInOrOut,
+	reportError,
 	sendMessage,
 } from ".";
 
@@ -83,7 +84,8 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 			}
 		}
 	} catch (error) {
-		logger.error(error);
+		const page = await browser.newPage();
+		await reportError(page, error);
 	}
 };
 
