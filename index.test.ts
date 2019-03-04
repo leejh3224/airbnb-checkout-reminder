@@ -89,7 +89,7 @@ describe.skip("send gmail message", () => {
 	});
 });
 
-describe("send message", () => {
+describe.skip("send message", () => {
 	let browser: puppeteer.Browser;
 
 	beforeAll(async () => {
