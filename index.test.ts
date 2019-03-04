@@ -68,7 +68,7 @@ describe.skip("send gmail message", () => {
 		await browser.close();
 	});
 
-	test("main", async () => {
+	it("can send mail subject and body containing non ascii characters", async () => {
 		const [page] = await browser.pages();
 		const oauth2Client = await getOAuthClient(page);
 
@@ -89,7 +89,7 @@ describe.skip("send gmail message", () => {
 	});
 });
 
-describe.skip("send message", () => {
+describe("send message", () => {
 	let browser: puppeteer.Browser;
 
 	beforeAll(async () => {

@@ -22,7 +22,10 @@ const getAptNumber = async (page: puppeteer.Page) => {
 	const $aptName = "section div div div div div";
 
 	const waitUntilAptNameLoads = page.waitForFunction(
-		(selector) => document.querySelector(selector).textContent !== "",
+		(selector) => {
+			const aptNameElement = document.querySelector(selector);
+			return aptNameElement && aptNameElement.textContent !== "";
+		},
 		{},
 		$aptName,
 	);
@@ -53,7 +56,11 @@ async function sendMessage(
 			"https://www.airbnb.com/messaging/qt_for_reservation";
 		const fullUrl = `${messaging}/${reservationCode}`;
 
-		await this.goto(fullUrl);
+		// page needs to load some contents dynamically thus add waitUntil option
+		await this.goto(fullUrl, {
+			timeout: 5000,
+			waitUntil: "networkidle0",
+		});
 
 		const lang = await getLanguage(this);
 		const aptNumber = await getAptNumber(this);
