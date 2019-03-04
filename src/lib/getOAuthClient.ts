@@ -9,7 +9,7 @@ import { GMAIL_SCOPES, OAUTH_SERVER_PORT } from "./constants";
 import logger from "./logger";
 
 const getOAuthClient = (page: puppeteer.Page) => {
-	const keyPath = path.resolve("oauth2.keys.json");
+	const keyPath = path.resolve(process.env.OAUTH2_KEY as string);
 	let keys: any = { redirect_uris: [""] };
 	if (fs.existsSync(keyPath)) {
 		keys = require(keyPath).web;
