@@ -57,10 +57,7 @@ async function sendMessage(
 		const fullUrl = `${messaging}/${reservationCode}`;
 
 		// page needs to load some contents dynamically thus add waitUntil option
-		await this.goto(fullUrl, {
-			timeout: 5000,
-			waitUntil: "networkidle0",
-		});
+		await this.goto(fullUrl, { waitUntil: "networkidle0" });
 
 		const lang = await getLanguage(this);
 		const aptNumber = await getAptNumber(this);
