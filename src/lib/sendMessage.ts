@@ -2,7 +2,7 @@ import * as puppeteer from "puppeteer";
 import { detectLanguage, getMessage, reportError } from ".";
 import { Message } from "../types";
 
-interface sendMessageParams {
+interface SendMessageParams {
 	reservationCode: string;
 	type: Message;
 }
@@ -12,7 +12,7 @@ const getLanguage = async (page: puppeteer.Page) => {
 
 	const [element] = (await page.$$($messagesList)).slice(-1);
 	const firstGuestMessage = await page.evaluate(
-		(element) => element.textContent,
+		(el) => el.textContent,
 		element,
 	);
 	return detectLanguage(firstGuestMessage);
@@ -23,8 +23,8 @@ const getAptNumber = async (page: puppeteer.Page) => {
 
 	const waitUntilAptNameLoads = page.waitForFunction(
 		(selector) => {
-			const aptNameElement = document.querySelector(selector);
-			return aptNameElement && aptNameElement.textContent !== "";
+			const aptNameEl = document.querySelector(selector);
+			return aptNameEl && aptNameEl.textContent !== "";
 		},
 		{},
 		$aptName,
@@ -46,7 +46,7 @@ const getAptNumber = async (page: puppeteer.Page) => {
 
 async function sendMessage(
 	this: puppeteer.Page,
-	{ reservationCode, type }: sendMessageParams,
+	{ reservationCode, type }: SendMessageParams,
 ): Promise<boolean | void> {
 	try {
 		const $sendMessageTextarea = "#send_message_textarea";

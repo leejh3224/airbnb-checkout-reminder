@@ -15,7 +15,7 @@ import {
 	RESERVATION_CONFIRMED,
 } from "./src/lib/constants";
 
-describe.skip("needsCheckInOrOut", () => {
+describe("needsCheckInOrOut", () => {
 	const date = new Date("2019 1. 15.");
 
 	test.each([
@@ -33,7 +33,7 @@ describe.skip("needsCheckInOrOut", () => {
 	});
 });
 
-describe.skip("detect language", () => {
+describe("detect language", () => {
 	test.each([
 		[
 			"안녕하세요!숙소 문의드리고싶어서요�혹시 집에서 바다가 보이나요?",
@@ -53,7 +53,7 @@ describe.skip("detect language", () => {
 	});
 });
 
-describe.skip("send gmail message", () => {
+describe("send gmail message", () => {
 	let browser: puppeteer.Browser;
 
 	beforeAll(async () => {
@@ -89,7 +89,7 @@ describe.skip("send gmail message", () => {
 	});
 });
 
-describe.skip("send message", () => {
+describe("send message", () => {
 	let browser: puppeteer.Browser;
 
 	beforeAll(async () => {

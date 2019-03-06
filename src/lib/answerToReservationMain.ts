@@ -1,7 +1,13 @@
 import { gmail_v1, google } from "googleapis";
 import puppeteer from "puppeteer";
 
-import { buildMailBody, getOAuthClient, logger, sendMessage } from ".";
+import {
+	airbnbLogin,
+	buildMailBody,
+	getOAuthClient,
+	logger,
+	sendMessage,
+} from ".";
 import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	CHECK_IN_REMINDER_START_HOUR,
@@ -27,6 +33,11 @@ const answerToReservationMain = async (
 		) {
 			return;
 		}
+
+		await airbnbLogin.bind(browser)({
+			email: process.env.email as string,
+			password: process.env.password as string,
+		});
 
 		const [page] = await browser.pages();
 		const oauth2Client = await getOAuthClient(page);
@@ -95,7 +106,7 @@ const answerToReservationMain = async (
 								typeof title === "string" &&
 								keywords.some((word) => title.includes(word))
 							) {
-								const page = await browser.newPage();
+								const newPage = await browser.newPage();
 
 								const matchReservationCode = /[A-Z0-9]{10}/;
 								const matched = body.match(matchReservationCode);
@@ -104,7 +115,7 @@ const answerToReservationMain = async (
 
 								logger.info(`sending message for ${title}!`);
 
-								const done = await sendMessage.bind(page)({
+								const done = await sendMessage.bind(newPage)({
 									reservationCode,
 									type: RESERVATION_CONFIRMED,
 								});
