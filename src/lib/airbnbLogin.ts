@@ -1,16 +1,8 @@
 import puppeteer from "puppeteer";
-import { logger, reportError } from ".";
-import { AIRBNB_HOME_URL, AIRBNB_LOGIN_URL } from "./constants";
+import { reportError } from ".";
+import { AIRBNB_LOGIN_URL } from "./constants";
 
-interface Credentials {
-	email: string;
-	password: string;
-}
-
-async function airbnbLogin(
-	this: puppeteer.Browser,
-	credentials: Credentials,
-) {
+async function airbnbLogin(this: puppeteer.Browser) {
 	try {
 		const $emailInput = "#signin_email";
 		const $passwordInput = "#signin_password";
@@ -18,27 +10,25 @@ async function airbnbLogin(
 
 		const [page] = await this.pages();
 
-		await Promise.all([
-			page.goto(AIRBNB_LOGIN_URL),
-			page.waitForNavigation({ waitUntil: "networkidle0" }),
-		]);
+		await page.goto(AIRBNB_LOGIN_URL, { waitUntil: "networkidle0" });
 
-		if (page.url() === AIRBNB_HOME_URL) {
+		// already loggedIn
+		if (page.url().includes("hosting")) {
 			return true;
+		} else {
+			const { email, password } = process.env;
+
+			if (email && password) {
+				await page.type($emailInput, email);
+				await page.type($passwordInput, password);
+				await Promise.all([
+					page.click($submitButton),
+					page.waitForNavigation({ waitUntil: "networkidle0" }),
+				]);
+			}
+
+			return page.url().includes("hosting");
 		}
-
-		const { email, password } = process.env;
-
-		if (email && password) {
-			await page.type($emailInput, email);
-			await page.type($passwordInput, password);
-			await Promise.all([
-				page.click($submitButton),
-				page.waitForNavigation({ waitUntil: "networkidle0" }),
-			]);
-		}
-
-		return page.url() === AIRBNB_HOME_URL;
 	} catch (error) {
 		const [page] = await this.pages();
 		await reportError(page, error);

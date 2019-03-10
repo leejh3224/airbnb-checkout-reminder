@@ -34,10 +34,7 @@ const answerToReservationMain = async (
 			return;
 		}
 
-		await airbnbLogin.bind(browser)({
-			email: process.env.email as string,
-			password: process.env.password as string,
-		});
+		await airbnbLogin.bind(browser)();
 
 		const [page] = await browser.pages();
 		const oauth2Client = await getOAuthClient(page);

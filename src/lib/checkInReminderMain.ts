@@ -9,10 +9,7 @@ import {
 
 const checkInReminderMain = async (browser: puppeteer.Browser) => {
 	try {
-		await airbnbLogin.bind(browser)({
-			email: process.env.email as string,
-			password: process.env.password as string,
-		});
+		await airbnbLogin.bind(browser)();
 
 		// selectors
 		const $table = "table";

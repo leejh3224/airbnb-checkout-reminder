@@ -39,7 +39,6 @@ export const MAP_TO_HOUSE_URL =
 export const SELF_CHECK_IN_BASE_URL =
 	"https://www.airbnb.com/reservation/check-in-guide";
 export const AIRBNB_LOGIN_URL = "https://www.airbnb.com/login";
-export const AIRBNB_HOME_URL = "https://www.airbnb.com/hosting";
 
 // schedules
 export const CHECK_IN_REMINDER_START_HOUR = 7;

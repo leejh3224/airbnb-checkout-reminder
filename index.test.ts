@@ -2,6 +2,7 @@ import { gmail_v1, google } from "googleapis";
 import puppeteer from "puppeteer";
 
 import {
+	airbnbLogin,
 	buildMailBody,
 	detectLanguage,
 	getOAuthClient,
@@ -28,7 +29,7 @@ describe("needsCheckInOrOut", () => {
 			date,
 			{ required: true, type: CHECK_OUT },
 		],
-	])("input: %s", (a, b, expected) => {
+	])("input: %s", (a: any, b: any, expected) => {
 		expect(needsCheckInOrOut(a, b)).toEqual(expected);
 	});
 });
@@ -46,11 +47,14 @@ describe("detect language", () => {
 		["Qu'est-ce que vous faites?", "en"], // detect french then reply english
 		[".", "ko"],
 		["", "ko"],
-	])("should detect `%s` to `%s`", async (input, output, done) => {
-		const lang = await detectLanguage(input);
-		expect(lang).toBe(output);
-		done();
-	});
+	])(
+		"should detect `%s` to `%s`",
+		async (input, output, done: any) => {
+			const lang = await detectLanguage(input);
+			expect(lang).toBe(output);
+			done();
+		},
+	);
 });
 
 describe("send gmail message", () => {
@@ -106,7 +110,7 @@ describe("send message", () => {
 
 	test.each([[CHECK_IN], [CHECK_OUT], [RESERVATION_CONFIRMED]])(
 		"case %s",
-		async (type) => {
+		async (type: any) => {
 			const page = await browser.newPage();
 
 			const done = await sendMessage.bind(page)({
@@ -119,4 +123,25 @@ describe("send message", () => {
 			await page.close();
 		},
 	);
+});
+
+describe("airbnb login", () => {
+	let browser: puppeteer.Browser;
+
+	beforeAll(async () => {
+		browser = await initPuppeteer(false);
+
+		// puppeteer test takes longer time than usual tests.
+		// so override default jest timeout not to interrupt test
+		jest.setTimeout(150000);
+	});
+
+	afterAll(async () => {
+		await browser.close();
+	});
+
+	it("should login user", async () => {
+		const done = await airbnbLogin.bind(browser)();
+		expect(done).toBe(true);
+	});
 });

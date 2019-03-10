@@ -3,5 +3,10 @@ module.exports = {
 	testEnvironment: 'node',
 	moduleNameMapper: {
 		'^lib/(.*)$': '<rootDir>/lib/$1',
-	},
+  },
+  globals: {
+    'ts-jest': {
+      diagnostics: false
+    }
+  }
 }
