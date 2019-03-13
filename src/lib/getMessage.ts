@@ -30,7 +30,9 @@ const getMessage = (
 					stripIndents`
             오늘은 체크인하는 날이에요. (입실 : 15시)
             다시 한번 셀프 체크인 가이드를 확인해주세요.
-            궁금한 점은 언제든 연락주세요. 전화는 못받을 수 있으니, 메세지 남겨주세요.
+            궁금한 점이 있으신가요?
+            에어비앤비 메시지를 통해서 호스트와 빠르게 소통하세요~!
+            전화 연락은 어려울 수 있습니다.
 
             그럼 즐거운 여행이 되시길 바래요~!!
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
@@ -40,8 +42,10 @@ const getMessage = (
 					stripIndents`
             It's check in day today!
             Please check in after 3:00 PM.
-            Check out self check in guide to know how to do check in.
-            Have a nice trip :)
+            Do you have questions?
+            Please leave an Airbnb message.
+
+            Then have a nice trip :)
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
           `,
 				],
@@ -78,7 +82,7 @@ const getMessage = (
             * 체크아웃: 오전 11시까지
             (퇴실 시간을 엄수해주시길 간곡히 부탁드립니다 ^^ 숙소 정리에 오랜 시간이 소요되오니 너그러이 이해해주세요.)
 
-            * 메세지와 전화를 통해 호스트와 연락하세요. 메세지는 빠른 확인 및 피드백이 가능해요. 하지만 전화는 못 받을 수도 있으니 양해 부탁드립니다.
+            * 궁금한 점이 있으신가요? 에어비앤비 메시지를 통해서 호스트와 빠르게 소통하세요~! 전화 연락은 어려울 수 있습니다.
 
             * 흡연은 절대 금지입니다!
 
@@ -106,6 +110,8 @@ const getMessage = (
             (Don't be late for check out time. Please be aware that it takes some time to clean up the room after you check out)
 
             Here are some helpful information.
+
+            * Do you have questions? Please leave an Airbnb message.
 
             * Don't smoke in the room.
 
