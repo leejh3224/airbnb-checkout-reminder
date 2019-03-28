@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { logger, reportError } from ".";
+import { reportError } from ".";
 import { AIRBNB_LOGIN_URL } from "./constants";
 
 async function airbnbLogin(this: puppeteer.Browser) {
@@ -12,18 +12,15 @@ async function airbnbLogin(this: puppeteer.Browser) {
 
 		await page.goto(AIRBNB_LOGIN_URL, { waitUntil: "networkidle0" });
 
-		logger.info(`page.url is ${page.url()}`);
-
 		// already loggedIn
 		if (page.url().includes("hosting")) {
-			logger.info("already loggedIn!");
 			return true;
 		} else {
 			const { email, password } = process.env;
 
-			logger.info("not loggedIn!");
-
 			if (email && password) {
+				await page.waitForSelector($emailInput);
+				await page.waitForSelector($passwordInput);
 				await page.type($emailInput, email);
 				await page.type($passwordInput, password);
 				await Promise.all([
@@ -31,8 +28,6 @@ async function airbnbLogin(this: puppeteer.Browser) {
 					page.waitForNavigation({ waitUntil: "networkidle0" }),
 				]);
 			}
-
-			logger.info(`page.url is ${page.url()}`);
 
 			return page.url().includes("hosting");
 		}
