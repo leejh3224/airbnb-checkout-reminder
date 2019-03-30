@@ -17,3 +17,7 @@ checkInReminder(
 answerToReservation(`*/${ANSWER_TO_RESERVATION_PERIOD} * * * *`);
 
 app.listen(port, () => logger.info(`listening to ${port}`));
+
+process.on('uncaughtException', (err) => {
+  console.log(err.stack);
+});
