@@ -71,7 +71,7 @@ const getOAuthClient = (page: puppeteer.Page) => {
 
 						// already authenticated
 						if (bodyText && bodyText === authSuccessMessage) {
-							return;
+							resolve();
 						} else {
 							await page.waitForSelector($me);
 							await page.click($me);
@@ -95,10 +95,12 @@ const getOAuthClient = (page: puppeteer.Page) => {
 							await page.type($password, process.env
 								.password as string);
 							await page.click($nextPageButton);
-							await page.waitFor(3000);
+              await page.waitFor(3000);
+              resolve();
 						}
 					} catch (error) {
-						logger.error(error);
+            logger.error(error);
+            reject(error);
 					}
 				});
 
