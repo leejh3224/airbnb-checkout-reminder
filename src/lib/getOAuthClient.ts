@@ -8,8 +8,8 @@ import * as url from "url";
 import { GMAIL_SCOPES, OAUTH_SERVER_PORT } from "./constants";
 import logger from "./logger";
 
-const getOAuthClient = (page: puppeteer.Page) => {
-	const keyPath = path.resolve(process.env.OAUTH2_KEY as string);
+const getOAuthClient = (page: puppeteer.Page) => { 
+  const keyPath = path.resolve(process.env.OAUTH2_KEY as string);
 	let keys: any = { redirect_uris: [""] };
 	if (fs.existsSync(keyPath)) {
 		keys = require(keyPath).web;
@@ -29,7 +29,9 @@ const getOAuthClient = (page: puppeteer.Page) => {
 			});
 
 			const authSuccessMessage =
-				"Authentication successful! Please return to the console.";
+        "Authentication successful! Please return to the console.";
+        
+      let err: any;
 
 			const server = http
 				.createServer(async (req, res) => {
@@ -45,14 +47,17 @@ const getOAuthClient = (page: puppeteer.Page) => {
 								"code",
 							) as any);
 							oauth2Client.credentials = tokens;
-							resolve(oauth2Client);
 						}
 					} catch (e) {
-						reject(e);
+						err = e;
 					}
 				})
 				.listen(OAUTH_SERVER_PORT, async () => {
 					try {
+            if (err) {
+              reject(err);
+            }
+
 						// selectors
 						const $me = "content li:first-child > div > div";
 						const $header = "#headingText > content";
@@ -71,7 +76,7 @@ const getOAuthClient = (page: puppeteer.Page) => {
 
 						// already authenticated
 						if (bodyText && bodyText === authSuccessMessage) {
-							resolve();
+							resolve(oauth2Client);
 						} else {
 							await page.waitForSelector($me);
 							await page.click($me);
@@ -96,7 +101,7 @@ const getOAuthClient = (page: puppeteer.Page) => {
 								.password as string);
 							await page.click($nextPageButton);
               await page.waitFor(3000);
-              resolve();
+              resolve(oauth2Client);
 						}
 					} catch (error) {
             logger.error(error);
