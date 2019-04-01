@@ -23,7 +23,8 @@ describe("needsCheckInOrOut", () => {
 		["Jan 13–18, 2019", date, { required: false, type: undefined }],
 		["Jan 13–15, 2019", date, { required: true, type: CHECK_OUT }],
 		["Jan 15–17, 2019", date, { required: true, type: CHECK_IN }],
-		["Jan 15–Feb 1, 2019", date, { required: true, type: CHECK_IN }],
+    ["Jan 15–Feb 1, 2019", date, { required: true, type: CHECK_IN }],
+    ["Jan 30–Feb 1, 2019", date, { required: false, type: undefined }],
 		[
 			"Dec 31–Jan 15, 2019",
 			date,

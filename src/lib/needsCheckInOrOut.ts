@@ -28,7 +28,7 @@ const needsCheckInOrOut = (
 			"|",
 		)})\?\\s\?(\\d{1,2})`,
 	);
-	const matched = periodMatcher.exec(period);
+  const matched = periodMatcher.exec(period);
 
 	if (matched) {
 		let [, month, startDate, month2, endDate] = mapToNumber(matched);
@@ -42,13 +42,16 @@ const needsCheckInOrOut = (
 		}
 
 		const thisMonth = now.getMonth();
-		const currentDate = now.getDate();
+    const currentDate = now.getDate();
 
 		const willCheckIn =
 			month === thisMonth && startDate === currentDate;
-		const willCheckOut =
-			(month === thisMonth || month2 === thisMonth) &&
-			endDate === currentDate;
+    const willCheckOut =
+      // today: Jan 15
+      // case1: Jan 13-15
+      (!month2 && month === thisMonth && endDate === currentDate) ||
+      // case2: Jan 30-Feb 15
+      (month2 === thisMonth && endDate === currentDate);
 
 		let messageType: Message;
 
