@@ -12,8 +12,7 @@ async function airbnbLogin(this: puppeteer.Browser) {
 
 		await page.goto(AIRBNB_LOGIN_URL, { waitUntil: "networkidle0" });
 
-		// already loggedIn
-		if (page.url().includes("hosting")) {
+		if (page.url() !== AIRBNB_LOGIN_URL) {
 			return true;
 		} else {
 			const { email, password } = process.env;
