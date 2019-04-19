@@ -1,6 +1,9 @@
 import * as puppeteer from "puppeteer";
 import { detectLanguage, getMessage, reportError } from ".";
 import { Message } from "../types";
+import {
+	LANGUAGE_KOREAN,
+} from "./constants";
 
 interface SendMessageParams {
 	reservationCode: string;
@@ -10,11 +13,18 @@ interface SendMessageParams {
 const getLanguage = async (page: puppeteer.Page) => {
 	const $messagesList = ".message-text > .interweave";
 
-	const [element] = (await page.$$($messagesList)).slice(-1);
+  const messagesList = await page.$$($messagesList)
+
+  // if guest doesn't send message, just assume he/she speaks korean
+  if (!messagesList.length) {
+    return LANGUAGE_KOREAN;
+  }
+
+	const [element] = messagesList.slice(-1);
 	const firstGuestMessage = await page.evaluate(
 		(el) => el.textContent,
 		element,
-	);
+  );
 	return detectLanguage(firstGuestMessage);
 };
 
