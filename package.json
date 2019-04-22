@@ -4,7 +4,7 @@
 	"main": "index.js",
 	"license": "MIT",
 	"scripts": {
-		"start": "env $(cat .env) nodemon --watch src ./index.ts --exec 'ts-node -r tsconfig-paths/register'",
+		"start": "env $(cat .env) nodemon --watch src ./index.ts -V --exec 'ts-node -r tsconfig-paths/register'",
 		"test": "env $(cat .env) jest",
 		"start:pro": "tsc && node ./build",
 		"build": "tsc"
