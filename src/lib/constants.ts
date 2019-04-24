@@ -26,7 +26,8 @@ export const SELF_CHECK_IN_LINK: { [key: string]: string } = {
 	503: "29767093",
 	308: "33443064",
 	403: "33443644",
-	405: "33443985",
+  405: "33443985",
+  501: "34123213",
 };
 
 export const GMAIL_SCOPES = [
