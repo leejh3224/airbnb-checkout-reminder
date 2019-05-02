@@ -6,7 +6,6 @@ import {
 	reportError,
 	sendMessage,
 } from ".";
-import { retry } from "./retry";
 
 const checkInReminderMain = async (browser: puppeteer.Browser) => {
 	try {
@@ -35,7 +34,7 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 		const reservations = "https://www.airbnb.com/hosting/reservations/upcoming";
 		await page.goto(reservations);
 
-		await retry(() => page.waitForSelector($table));
+		await page.waitForSelector($table);
 		const tableRows = await page.$$($row);
 
 		for await (const [_, row] of tableRows.entries()) {

@@ -2,7 +2,6 @@ import * as puppeteer from "puppeteer";
 import { detectLanguage, getMessage, reportError } from ".";
 import { Message } from "../types";
 import { LANGUAGE_KOREAN } from "./constants";
-import { retry } from "./retry";
 interface SendMessageParams {
 	reservationCode: string;
 	type: Message;
@@ -19,9 +18,8 @@ const getLanguage = async (page: puppeteer.Page) => {
 	}
 
 	const [element] = messagesList.slice(-1);
-	const firstGuestMessage = await retry(() =>
-		page.evaluate((el) => el.textContent, element),
-	);
+	const firstGuestMessage = await page.evaluate((el) => el.textContent, element);
+
 	return detectLanguage(firstGuestMessage);
 };
 
@@ -37,7 +35,7 @@ const getAptNumber = async (page: puppeteer.Page) => {
 		$aptName,
 	);
 
-	await retry(() => waitUntilAptNameLoads);
+	await waitUntilAptNameLoads;
 	const aptNameElement = await page.$($aptName);
 	const aptNameText = await page.evaluate(
 		(element) => element.textContent,
