@@ -57,21 +57,21 @@ const getOAuthClient = (page: puppeteer.Page) => {
 						const $me = "content li:first-child > div > div";
 						const $header = "#headingText > content";
 						const $email = 'input[type="email"]';
-            const $password = 'input[type="password"]';
-            const $emailNextPageButton = "#identifierNext";
+						const $password = 'input[type="password"]';
+						const $emailNextPageButton = "#identifierNext";
 						const $nextPageButton = "#passwordNext";
 
-						await page.goto(authorizeUrl, { waitUntil: 'networkidle2' });
+						await page.goto(authorizeUrl, { waitUntil: "networkidle2" });
 
-            // when your login history is gone
+						// when your login history is gone
 						if ((await page.$($email)) !== null) {
-              await page.type($email, process.env.email as string);
-              await page.click($emailNextPageButton);
-              await page.waitFor(3000);
-              await page.type($password, process.env.password as string);
-              await page.waitForSelector($nextPageButton);
-              await page.click($nextPageButton);
-              await page.waitFor(3000);
+							await page.type($email, process.env.email as string);
+							await page.click($emailNextPageButton);
+							await page.waitFor(3000);
+							await page.type($password, process.env.password as string);
+							await page.waitForSelector($nextPageButton);
+							await page.click($nextPageButton);
+							await page.waitFor(3000);
 						}
 
 						const bodyText = await page.evaluate(() => {
@@ -105,12 +105,12 @@ const getOAuthClient = (page: puppeteer.Page) => {
 							await page.waitForSelector($password);
 							await page.type($password, process.env.password as string);
 							await page.click($nextPageButton);
-              await page.waitFor(3000);
-              resolve();
+							await page.waitFor(3000);
+							resolve();
 						}
 					} catch (error) {
-            logger.error(error);
-            reject(error);
+						logger.error(error);
+						reject(error);
 					}
 				});
 

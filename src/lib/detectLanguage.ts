@@ -26,9 +26,7 @@ const detectLanguage = async (input: string) => {
 				return LANGUAGE_KOREAN;
 			}
 
-			return detected === LANGUAGE_KOREAN
-				? LANGUAGE_KOREAN
-				: LANGUAGE_ENGLISH;
+			return detected === LANGUAGE_KOREAN ? LANGUAGE_KOREAN : LANGUAGE_ENGLISH;
 		}
 
 		return LANGUAGE_KOREAN;
