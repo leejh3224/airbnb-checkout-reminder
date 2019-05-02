@@ -6,6 +6,7 @@ import {
 	reportError,
 	sendMessage,
 } from ".";
+import { retry } from "./retry";
 
 const checkInReminderMain = async (browser: puppeteer.Browser) => {
 	try {
@@ -25,28 +26,20 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 			periodSelector: string,
 		) => {
 			// reservation period is the 4th cell
-			const [, , , periodCell] = element.querySelectorAll(
-				cellSelector,
-			);
+			const [, , , periodCell] = element.querySelectorAll(cellSelector);
 			return periodCell.querySelector(periodSelector).textContent;
 		};
 
 		const [page] = await browser.pages();
 
-		const reservations =
-			"https://www.airbnb.com/hosting/reservations/upcoming";
+		const reservations = "https://www.airbnb.com/hosting/reservations/upcoming";
 		await page.goto(reservations);
 
-		await page.waitForSelector($table);
+		await retry(() => page.waitForSelector($table));
 		const tableRows = await page.$$($row);
 
 		for await (const [_, row] of tableRows.entries()) {
-			const period = await page.evaluate(
-				getPeriodText,
-				row,
-				$cell,
-				$period,
-			);
+			const period = await page.evaluate(getPeriodText, row, $cell, $period);
 
 			const checkInOut = needsCheckInOrOut(period);
 
@@ -62,9 +55,7 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 					(element) => element.href,
 					itineraryButton,
 				);
-				const [, reservationCode] = new URL(
-					itineraryUrl,
-				).search.split("=");
+				const [, reservationCode] = new URL(itineraryUrl).search.split("=");
 
 				const newTab = await browser.newPage();
 
@@ -75,9 +66,7 @@ const checkInReminderMain = async (browser: puppeteer.Browser) => {
 					});
 				}
 
-				logger.info(
-					`done sending message for ${period} ${reservationCode}`,
-				);
+				logger.info(`done sending message for ${period} ${reservationCode}`);
 			}
 		}
 	} catch (error) {

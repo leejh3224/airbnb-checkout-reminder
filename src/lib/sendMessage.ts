@@ -1,10 +1,8 @@
 import * as puppeteer from "puppeteer";
 import { detectLanguage, getMessage, reportError } from ".";
 import { Message } from "../types";
-import {
-	LANGUAGE_KOREAN,
-} from "./constants";
-
+import { LANGUAGE_KOREAN } from "./constants";
+import { retry } from "./retry";
 interface SendMessageParams {
 	reservationCode: string;
 	type: Message;
@@ -13,18 +11,17 @@ interface SendMessageParams {
 const getLanguage = async (page: puppeteer.Page) => {
 	const $messagesList = ".message-text > .interweave";
 
-  const messagesList = await page.$$($messagesList)
+	const messagesList = await page.$$($messagesList);
 
-  // if guest doesn't send message, just assume he/she speaks korean
-  if (!messagesList.length) {
-    return LANGUAGE_KOREAN;
-  }
+	// if guest doesn't send message, just assume he/she speaks korean
+	if (!messagesList.length) {
+		return LANGUAGE_KOREAN;
+	}
 
 	const [element] = messagesList.slice(-1);
-	const firstGuestMessage = await page.evaluate(
-		(el) => el.textContent,
-		element,
-  );
+	const firstGuestMessage = await retry(() =>
+		page.evaluate((el) => el.textContent, element),
+	);
 	return detectLanguage(firstGuestMessage);
 };
 
@@ -40,7 +37,7 @@ const getAptNumber = async (page: puppeteer.Page) => {
 		$aptName,
 	);
 
-	await waitUntilAptNameLoads;
+	await retry(() => waitUntilAptNameLoads);
 	const aptNameElement = await page.$($aptName);
 	const aptNameText = await page.evaluate(
 		(element) => element.textContent,
@@ -62,8 +59,7 @@ async function sendMessage(
 		const $sendMessageTextarea = "#send_message_textarea";
 		const $messageSubmitButton = 'button[type="submit"]';
 
-		const messaging =
-			"https://www.airbnb.com/messaging/qt_for_reservation";
+		const messaging = "https://www.airbnb.com/messaging/qt_for_reservation";
 		const fullUrl = `${messaging}/${reservationCode}`;
 
 		// page needs to load some contents dynamically thus add waitUntil option
