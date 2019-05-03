@@ -1,9 +1,13 @@
+// status
 export const CHECK_IN = "check-in";
 export const CHECK_OUT = "check-out";
 export const RESERVATION_CONFIRMED = "reservation-confirmed";
+
+// languages
 export const LANGUAGE_KOREAN = "ko";
 export const LANGUAGE_ENGLISH = "en";
 export const LANGUAGE_UNKNOWN = "und";
+
 export const TWELVE_MONTHS = [
 	"Jan",
 	"Feb",
