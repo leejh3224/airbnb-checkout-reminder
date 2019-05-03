@@ -19,6 +19,7 @@
 		"node-cron": "^2.0.3",
 		"puppeteer": "^1.15.0",
 		"server-destroy": "^1.0.1",
+		"ts-optchain": "^0.1.6",
 		"winston": "^3.2.1"
 	},
 	"devDependencies": {
