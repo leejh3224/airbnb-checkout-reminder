@@ -1,2 +1,2 @@
-export { default as checkInReminder } from "./checkInReminder";
-export { default as answerToReservation } from "./answerToReservation";
+export { default as remindCheckIn } from "./remind-check-in";
+export { default as respondReservation } from "./respond-reservation";
