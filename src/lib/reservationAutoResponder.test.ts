@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 
 import { initPuppeteer } from ".";
-import testMail from "../fixtures/gmail/messages.get.json";
+import * as testMail from "../fixtures/gmail/messages.get.json";
 import ReservationAutoResponder from "./reservationAutoResponder";
 
 describe("reservationAutoResponder", () => {
@@ -19,7 +19,7 @@ describe("reservationAutoResponder", () => {
 		await browser.close();
 	});
 
-	it.skip("tests respond function", async () => {
+	it("tests respond function", async () => {
 		const responder = new ReservationAutoResponder({ browser });
 
 		await responder.respond({
@@ -29,7 +29,7 @@ describe("reservationAutoResponder", () => {
 		});
 	});
 
-	it.skip("tests parseMail", async () => {
+	it("tests parseMail", async () => {
 		const responder = new ReservationAutoResponder({ browser });
 
 		const { dateReceived, title, body } = await responder.parseMail(testMail);
@@ -39,7 +39,7 @@ describe("reservationAutoResponder", () => {
 		expect(body).not.toBeFalsy();
 	});
 
-	it.skip("tests checkMailIsNew", () => {
+	it("tests checkMailIsNew", () => {
 		const date = "Fri, 03 May 2019 16:47:43 +0000 (UTC)";
 		const responder = new ReservationAutoResponder({ browser });
 		const result = responder.checkMailIsNew(date);
