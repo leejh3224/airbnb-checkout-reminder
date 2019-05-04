@@ -1,3 +1,4 @@
+import moment from "moment";
 import puppeteer from "puppeteer";
 
 import { initPuppeteer } from ".";
@@ -25,24 +26,29 @@ describe("reservationAutoResponder", () => {
 		await responder.respond({
 			reservationCode: "HMNHKJAY3Q",
 			reservationTitle: "테스트 예약",
-			shouldAnswer: true,
 		});
 	});
 
 	it("tests parseMail", async () => {
 		const responder = new ReservationAutoResponder({ browser });
 
-		const { dateReceived, title, body } = await responder.parseMail(testMail);
+		const { title, body } = await responder.parseMail(testMail);
 
 		expect(title).not.toBeFalsy();
-		expect(dateReceived).not.toBeFalsy();
 		expect(body).not.toBeFalsy();
 	});
 
-	it("tests checkMailIsNew", () => {
-		const date = "Fri, 03 May 2019 16:47:43 +0000 (UTC)";
+	it("tests getLastExecutedAtTimestamp", () => {
 		const responder = new ReservationAutoResponder({ browser });
-		const result = responder.checkMailIsNew(date);
-		expect(result).toBeFalsy();
+		const lastExecuted = responder.getLastExecutedAtTimestamp();
+		const now = moment().unix();
+
+		expect(lastExecuted).toBeLessThan(now);
+	});
+
+	it("tests getInbox", async () => {
+		const responder = new ReservationAutoResponder({ browser });
+		const mails = await responder.getInbox();
+		expect(mails).toEqual([]);
 	});
 });

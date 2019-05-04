@@ -1,4 +1,5 @@
 import { gmail_v1, google } from "googleapis";
+import moment from "moment";
 import puppeteer from "puppeteer";
 import { oc } from "ts-optchain";
 
@@ -13,7 +14,6 @@ import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	RESERVATION_CONFIRMED,
 } from "./constants";
-import "./DateExt";
 import reportError from "./reportError";
 
 class ReservationAutoResponder {
@@ -32,23 +32,14 @@ class ReservationAutoResponder {
 				return;
 			}
 
-			for await (const mail of mails!) {
+			for await (const mail of mails) {
 				const data = await this.getSingleMail({ id: mail.id });
-				const { title, body, dateReceived } = this.parseMail(data);
-
-				if (this.checkMailIsNew(dateReceived)) {
-					return;
-				}
-
-				const shouldAnswer = ["예약 확정", "Reservation confirmed"].some((word) =>
-					title.includes(word),
-				);
+				const { title, body } = this.parseMail(data);
 
 				const reservationCode = this.getReservationCode(body);
 				await this.respond({
 					reservationCode,
 					reservationTitle: title,
-					shouldAnswer,
 				});
 
 				await this.deleteMail({ id: mail.id });
@@ -70,50 +61,31 @@ class ReservationAutoResponder {
 	public async respond({
 		reservationCode,
 		reservationTitle,
-		shouldAnswer,
 	}: {
 		reservationCode: string;
 		reservationTitle: string;
-		shouldAnswer: boolean;
 	}) {
-		if (shouldAnswer) {
-			await airbnbLogin.bind(this.browser)();
+		await airbnbLogin.bind(this.browser)();
 
-			const newPage = await this.browser.newPage();
-			const done = await sendMessage.bind(newPage)({
-				reservationCode,
-				type: RESERVATION_CONFIRMED,
-			});
+		const newPage = await this.browser.newPage();
+		const done = await sendMessage.bind(newPage)({
+			reservationCode,
+			type: RESERVATION_CONFIRMED,
+		});
 
-			logger.info(`done sending message for ${reservationCode}`);
+		logger.info(`done sending message for ${reservationCode}`);
 
-			if (done) {
-				const gmail = await this.getGmailClient();
-				await gmail.users.messages.send({
-					userId: "me",
-					resource: {
-						raw: buildMailBody({
-							title: `[전송 완료] ${reservationTitle}`,
-						}),
-					},
-				} as gmail_v1.Params$Resource$Users$Messages$Send);
-			}
+		if (done) {
+			const gmail = await this.getGmailClient();
+			await gmail.users.messages.send({
+				userId: "me",
+				resource: {
+					raw: buildMailBody({
+						title: `[전송 완료] ${reservationTitle}`,
+					}),
+				},
+			} as gmail_v1.Params$Resource$Users$Messages$Send);
 		}
-	}
-
-	public checkMailIsNew(receivedDate: string) {
-		const UTC_OFFSET = 9;
-
-		const receivedDateLocal = new Date(receivedDate).add({
-			hour: UTC_OFFSET,
-		});
-
-		const lastRunDateLocal = new Date(Date.now()).add({
-			hour: UTC_OFFSET,
-			minutes: -ANSWER_TO_RESERVATION_PERIOD,
-		});
-
-		return lastRunDateLocal < receivedDateLocal;
 	}
 
 	public getReservationCode(mailBody: string) {
@@ -133,15 +105,11 @@ class ReservationAutoResponder {
 
 	public parseMail(mail: gmail_v1.Schema$Message) {
 		const headers = oc(mail).payload.headers([]);
-		const dateReceived = oc(
-			headers.find((header) => header.name === "Date"),
-		).value("");
 		const title = oc(headers.find((v) => v.name === "Subject")).value("");
 		let body = oc(mail).payload.parts[0].body.data("");
 		body = Buffer.from(body, "base64").toString("utf-8");
 
 		return {
-			dateReceived,
 			title,
 			body,
 		};
@@ -173,6 +141,14 @@ class ReservationAutoResponder {
 		return data;
 	}
 
+	public getLastExecutedAtTimestamp = () => {
+		const lastExecutedAt = moment().subtract(
+			ANSWER_TO_RESERVATION_PERIOD,
+			"minutes",
+		);
+		return lastExecutedAt.unix();
+	}
+
 	public async getInbox() {
 		const gmail = await this.getGmailClient();
 
@@ -182,6 +158,12 @@ class ReservationAutoResponder {
 			userId: "me",
 			labelIds: [process.env.AIRBNB_MAIL_LABEL_ID],
 			maxResults: 20,
+
+			/*
+			 * google mail search
+			 * reference: https://support.google.com/mail/answer/7190
+			 */
+			q: `after:${this.getLastExecutedAtTimestamp()} subject:{'예약 확정' 'Reservation confirmed'}`,
 		} as any);
 
 		return messages;

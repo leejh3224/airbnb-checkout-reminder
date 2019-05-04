@@ -118,7 +118,7 @@ const getAuthenticatedClient = (
 		const listen = promisify(oauthServer.listen.bind(oauthServer));
 		await listen(OAUTH_SERVER_PORT);
 		await handleGoogleLogin({ page, authorizeUrl });
-
+		oauthServer.close();
 		resolve(oAuth2Client);
 	});
 };
