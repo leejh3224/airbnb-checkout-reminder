@@ -5,7 +5,7 @@ import { oc } from "ts-optchain";
 import {
 	airbnbLogin,
 	buildMailBody,
-	getOAuthClient,
+	getAuthenticatedClient,
 	logger,
 	sendMessage,
 } from ".";
@@ -149,7 +149,7 @@ class ReservationAutoResponder {
 
 	public async getGmailClient() {
 		const [page] = await this.browser.pages();
-		const oauth2Client = await getOAuthClient(page);
+		const oauth2Client = await getAuthenticatedClient(page);
 
 		if (!this.gmail) {
 			this.gmail = await google.gmail({

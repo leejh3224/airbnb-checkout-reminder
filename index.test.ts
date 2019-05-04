@@ -5,7 +5,7 @@ import {
 	airbnbLogin,
 	buildMailBody,
 	detectLanguage,
-	getOAuthClient,
+	getAuthenticatedClient,
 	initPuppeteer,
 	needsCheckInOrOut,
 	sendMessage,
@@ -65,7 +65,7 @@ describe("send gmail message", () => {
 
 	it("can send mail subject and body containing non ascii characters", async () => {
 		const [page] = await browser.pages();
-		const oauth2Client = await getOAuthClient(page);
+		const oauth2Client = await getAuthenticatedClient(page);
 
 		const gmail = await google.gmail({
 			version: "v1",
