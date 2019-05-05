@@ -1,6 +1,6 @@
 import cron from "node-cron";
 
-import { checkInReminderMain, initPuppeteer, logger } from "lib";
+import { initPuppeteer, logger, remindCheckIn } from "lib";
 
 const checkInReminder = (schedule: string) =>
 	cron.schedule(
@@ -8,7 +8,7 @@ const checkInReminder = (schedule: string) =>
 		async () => {
 			try {
 				const browser = await initPuppeteer();
-				await checkInReminderMain(browser);
+				await remindCheckIn(browser);
 				await browser.close();
 			} catch (error) {
 				logger.error(error);
