@@ -33,18 +33,28 @@ export const createOAuthServer = async (
 					.includes("/oauth2callback")
 			) {
 				const { searchParams } = new url.URL(
-					req.url!,
+					oc(req).url(""),
 					`http://localhost:${OAUTH_SERVER_PORT}`,
 				);
 				const code = searchParams.get("code") || "";
 				res.end(OAUTH_SUCCESSFUL_MESSAGE);
-				server.close();
 				onAuthComplete(code);
 			}
 		},
 	);
 
 	return server;
+};
+
+const checkAlreadyAuthenticated = async (page: puppeteer.Page) => {
+	const bodyText = await page.evaluate(() => {
+		const body = document.querySelector("body");
+
+		// ts-optchain doesn't works so use ternary to check null
+		return body ? (body.textContent ? body.textContent : "") : "";
+	});
+
+	return bodyText === OAUTH_SUCCESSFUL_MESSAGE;
 };
 
 export const handleGoogleLogin = async ({
@@ -58,14 +68,7 @@ export const handleGoogleLogin = async ({
 		waitUntil: "networkidle2",
 	});
 
-	const bodyText = await page.evaluate(() => {
-		const body = document.querySelector("body");
-
-		// ts-optchain doesn't works so use ternary to check null
-		return body ? (body.textContent ? body.textContent : "") : "";
-	});
-
-	if (bodyText === OAUTH_SUCCESSFUL_MESSAGE) {
+	if (await checkAlreadyAuthenticated(page)) {
 		return true;
 	}
 
@@ -119,6 +122,7 @@ const getAuthenticatedClient = (
 		await listen(OAUTH_SERVER_PORT);
 		await handleGoogleLogin({ page, authorizeUrl });
 		oauthServer.close();
+
 		resolve(oAuth2Client);
 	});
 };
