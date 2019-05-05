@@ -1,5 +1,4 @@
 import { stripIndents } from "common-tags";
-import { Message } from "../types";
 import {
 	CHECK_IN,
 	CHECK_OUT,
@@ -8,26 +7,24 @@ import {
 	SELF_CHECK_IN_BASE_URL,
 	SELF_CHECK_IN_LINK,
 } from "./constants";
+import { ReservationStatus } from "./types";
 
 interface Options {
 	aptNumber: string;
 }
 
-const getMessage = (
-	type: Message,
-	{ aptNumber }: Options,
-): { [key: string]: string[] } | undefined => {
+const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
 	if (!SELF_CHECK_IN_LINK[aptNumber]) {
 		throw new Error(
 			"알 수 없는 객실입니다. 셀프 체크인 가이드 오브젝트에 추가해주세요.",
 		);
 	}
 
-	if (type !== undefined) {
-		return {
-			[CHECK_IN]: {
-				ko: [
-					stripIndents`
+	// tslint:disable: max-line-length
+	const messageMap: any = {
+		[CHECK_IN]: {
+			ko: [
+				stripIndents`
             오늘은 체크인하는 날이에요. (입실 : 15시)
             다시 한번 셀프 체크인 가이드를 확인해주세요.
             궁금한 점이 있으신가요?
@@ -37,9 +34,9 @@ const getMessage = (
             그럼 즐거운 여행이 되시길 바래요~!!
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
           `,
-				],
-				en: [
-					stripIndents`
+			],
+			en: [
+				stripIndents`
             It's check in day today!
             Please check in after 3:00 PM.
             Do you have questions?
@@ -48,11 +45,11 @@ const getMessage = (
             Then have a nice trip :)
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
           `,
-				],
-			},
-			[CHECK_OUT]: {
-				ko: [
-					stripIndents`
+			],
+		},
+		[CHECK_OUT]: {
+			ko: [
+				stripIndents`
             여행은 즐거우셨나요? ^^
             체크아웃은 11시까지예요.
             퇴실전에 기본적인 뒷정리 부탁드리고, 놓고 가는 물건이 없는 지 한번 더 체크해보세요~
@@ -60,9 +57,9 @@ const getMessage = (
             그리고 높은 평점, 좋은 후기를 적어주시면 감사의 뜻으로 ₩10,000 을 돌려드려요~ ^^
 
             후기 작성하고 메세지 남겨주세요~`,
-				],
-				en: [
-					stripIndents`
+			],
+			en: [
+				stripIndents`
             Did you enjoy the trip?
             You should check out until 11:00 AM.
             Before you leave, please clean up and make sure you take all your belongings with you.
@@ -71,11 +68,11 @@ const getMessage = (
 
             Leave a review and send us Airbnb message.
             Thank you. Have a nice day :)`,
-				],
-			},
-			[RESERVATION_CONFIRMED]: {
-				ko: [
-					stripIndents`
+			],
+		},
+		[RESERVATION_CONFIRMED]: {
+			ko: [
+				stripIndents`
             안녕하세요~ ^^
             저희 숙소를 선택해 주셔서 감사합니다.
 
@@ -99,9 +96,9 @@ const getMessage = (
 
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
           `,
-				],
-				en: [
-					stripIndents`
+			],
+			en: [
+				stripIndents`
             Hi!
 
             We look forward to meeting you.
@@ -134,10 +131,11 @@ const getMessage = (
 
             ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
           `,
-				],
-			},
-		}[type];
-	}
+			],
+		},
+	};
+
+	return messageMap[type];
 };
 
 export default getMessage;
