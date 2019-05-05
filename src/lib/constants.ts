@@ -1,6 +1,8 @@
 // status
 export const CHECK_IN = "check-in";
 export const CHECK_OUT = "check-out";
+export const GUEST_STAYING = "guest-staying";
+export const OUT_OF_RANGE = "out-of-range";
 export const RESERVATION_CONFIRMED = "reservation-confirmed";
 
 // languages
@@ -8,19 +10,6 @@ export const LANGUAGE_KOREAN = "ko";
 export const LANGUAGE_ENGLISH = "en";
 export const LANGUAGE_UNKNOWN = "und";
 
-export const TWELVE_MONTHS = [
-	"Jan",
-	"Feb",
-	"Mar",
-	"Apr",
-	"May",
-	"Jun",
-	"Jul",
-	"Aug",
-	"Oct",
-	"Nov",
-	"Dec",
-];
 export const SELF_CHECK_IN_LINK: { [key: string]: string } = {
 	201: "27092267",
 	302: "31765470",

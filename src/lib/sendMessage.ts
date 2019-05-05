@@ -1,10 +1,10 @@
 import * as puppeteer from "puppeteer";
 import { detectLanguage, getMessage, reportError } from ".";
-import { Message } from "../types";
 import { LANGUAGE_KOREAN } from "./constants";
+import { ReservationStatus } from "./types";
 interface SendMessageParams {
 	reservationCode: string;
-	type: Message;
+	type: ReservationStatus;
 }
 
 const getLanguage = async (page: puppeteer.Page) => {
