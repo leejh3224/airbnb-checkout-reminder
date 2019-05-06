@@ -1,7 +1,6 @@
 import puppeteer from "puppeteer";
-import { getReservationTable, parseTableRow, setup } from "./remindCheckIn";
-
 import { initPuppeteer } from ".";
+import { getReservationTable, parseTableRow, setup } from "./remindCheckIn";
 
 describe("remindCheckIn", () => {
 	let browser: puppeteer.Browser;
@@ -30,8 +29,8 @@ describe("remindCheckIn", () => {
 		const table = await getReservationTable(page);
 		const parsed = await parseTableRow(page, table[0]);
 
-		expect(parsed.period).not.toBe("");
-		expect(parsed.reservationCode).not.toBe("");
-		expect(parsed.status).not.toBe("");
+		expect(parsed).toHaveProperty("period");
+		expect(parsed).toHaveProperty("reservationCode");
+		expect(parsed).toHaveProperty("status");
 	});
 });

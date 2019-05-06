@@ -10,6 +10,7 @@ const initPuppeteer = async (headless: boolean = true) => {
 			"--disable-setuid-sandbox",
 			"--no-first-run",
 			"--no-zygote",
+			"--window-size=1920,1080",
 		],
 
 		// reuse user profile session
