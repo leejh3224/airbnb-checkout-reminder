@@ -28,8 +28,7 @@ describe("getReservationStatus", () => {
 		])(
 			"given: %s, status: %s",
 			(input: string, expected: ReservationStatus) => {
-				const parsed = parseReservationDates(input);
-				expect(getReservationStatus(parsed, now)).toEqual(expected);
+				expect(getReservationStatus(input, now)).toEqual(expected);
 			},
 		);
 	});

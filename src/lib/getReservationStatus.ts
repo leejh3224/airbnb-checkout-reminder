@@ -44,14 +44,15 @@ export const parseReservationDates = (period: string): IReservationPeriod => {
 };
 
 export const getReservationStatus = (
-	reservation: IReservationPeriod,
-	now: Date | number = moment.now(), // for testing purpose
+	period: string,
+	now: Date = new Date(Date.now()), // for testing purpose
 ): ReservationStatus => {
+	const reservation = parseReservationDates(period);
 	let status: ReservationStatus;
 
-	const willCheckIn = moment(reservation.start).isSame(now, "day");
-	const willCheckOut = moment(reservation.end).isSame(now, "day");
-	const isStaying = moment(now).isBetween(
+	const willCheckIn = moment(reservation.start).isSame(moment(now), "day");
+	const willCheckOut = moment(reservation.end).isSame(moment(now), "day");
+	const isStaying = moment(moment(now)).isBetween(
 		moment(reservation.start),
 		moment(reservation.end),
 		"day",
