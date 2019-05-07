@@ -2,7 +2,6 @@ import { stripIndents } from "common-tags";
 import {
 	CHECK_IN,
 	CHECK_OUT,
-	MAP_TO_HOUSE_URL,
 	RESERVATION_CONFIRMED,
 	SELF_CHECK_IN_BASE_URL,
 	SELF_CHECK_IN_LINK,
@@ -73,64 +72,48 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
 		[RESERVATION_CONFIRMED]: {
 			ko: [
 				stripIndents`
-            안녕하세요~ ^^
-            저희 숙소를 선택해 주셔서 감사합니다.
+          포항시 북구 삼호로253번길 17-5 필오피스텔
+        `,
+				stripIndents`
+          안녕하세요 게스트님^^
 
-            * 주소: 포항시 북구 삼호로253번길 17-5 필오피스텔
+          * 주소 검색은 위의 메세지를 꾹 눌러 복사하신 후 사용하세요.
+          * 체크인: 오후 3시부터
+            체크아웃: 오전 11시까지
+            (숙소 정리에 오랜 시간이 소요되오니 퇴실 시간을 엄수해주세요^^)
+          * 약도 / 체크인 방법 /
+          현관 및 숙소 비밀번호 / 숙소 이용 안내/ 주변 맛집 안내는 아래 링크를 통해 체크인 3일 전부터 확인하실 수 있습니다.
 
-            ${MAP_TO_HOUSE_URL}
+          ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
 
-            * 체크인: 오후 3시부터
-            * 체크아웃: 오전 11시까지
-            (퇴실 시간을 엄수해주시길 간곡히 부탁드립니다 ^^ 숙소 정리에 오랜 시간이 소요되오니 너그러이 이해해주세요.)
-
-            * 궁금한 점이 있으신가요? 에어비앤비 메시지를 통해서 호스트와 빠르게 소통하세요~! 전화 연락은 어려울 수 있습니다.
-
-            * 흡연은 절대 금지입니다!
-
-            * 침구, 쇼파, 러그의 오염 시(주스, 기름, 양념 자국 등) 추가 세탁 비용이 청구되오니 조금만 주의해주세요.
-
-            * 퇴실 전 설거지와 분리수거를 비롯한 기본적인 뒷정리를 꼭 부탁드립니다.
-
-            * 약도/숙소 체크인 방법/비밀 번호/이용 가이드/맛집 정보는 체크인 3일전부터 셀프 체크인 가이드를 통해서 확인 가능 합니다. (아래 링크)
-
-            ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-          `,
+          * 침구, 소파, 러그의 오염 시 세탁 비용이 청구될 수 있습니다.
+        `,
 			],
 			en: [
 				stripIndents`
-            Hi!
+          17-5, Samho-ro 253beon-gil, Buk-gu, Pohang-si
+        `,
+				stripIndents`
+          Hi!
 
-            We look forward to meeting you.
+          We look forward to meeting you.
 
-            * Address: 17-5, Samho-ro 253beon-gil, Buk-gu, Pohang-si
+          * Check-in: After 3:00 PM
+          * Check-out: Before 11:00 AM
+          (Don't be late for check out time. Please be aware that it takes some time to clean up the room after you check out)
 
-            ${MAP_TO_HOUSE_URL}
+          * You can check information such as
+            - map to house
+            - how to check in
+            - door lock code
+            - famous places nearby
+          in self check in guide.
+          (Self check in guide link will be open 3days before check in)
 
-            * Check-in: After 3:00 PM
-            * Check-out: Before 11:00 AM
-            (Don't be late for check out time. Please be aware that it takes some time to clean up the room after you check out)
+          ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
 
-            Here are some helpful information.
-
-            * Do you have questions? Please leave an Airbnb message.
-
-            * Don't smoke in the room.
-
-            * Please be aware that additional fee may charged for spilling on bedding, sofa and lug.
-
-            * Before you leave, make sure you did the dishes and separated the collection of waste.
-
-            * You can check information such as
-              - map to house
-              - how to check in
-              - door lock code
-              - famous places nearby
-            in self check in guide.
-            (Self check in guide link will be open 3days before check in)
-
-            ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-          `,
+          * Please be aware that additional fee may charged for spilling on bedding, sofa and lug.
+        `,
 			],
 		},
 	};
