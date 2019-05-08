@@ -77,16 +77,15 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
 				stripIndents`
           안녕하세요 게스트님^^
 
-          * 주소 검색은 위의 메세지를 꾹 눌러 복사하신 후 사용하세요.
+          * 숙소 주소는 위 메세지 참조.
+
           * 체크인: 오후 3시부터
             체크아웃: 오전 11시까지
-            (숙소 정리에 오랜 시간이 소요되오니 퇴실 시간을 엄수해주세요^^)
-          * 약도 / 체크인 방법 /
-          현관 및 숙소 비밀번호 / 숙소 이용 안내/ 주변 맛집 안내는 아래 링크를 통해 체크인 3일 전부터 확인하실 수 있습니다.
+            (숙소 정리를 위해 체크아웃 시간을 지켜주세요^^)
+
+          * 약도 / 체크인 / 비밀번호 / 숙소 이용 / 맛집 안내는 아래 링크를 통해 체크인 3일 전부터 확인 가능합니다.
 
           ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-
-          * 침구, 소파, 러그의 오염 시 세탁 비용이 청구될 수 있습니다.
         `,
 			],
 			en: [
@@ -111,8 +110,6 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
           (Self check in guide link will be open 3days before check in)
 
           ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
-
-          * Please be aware that additional fee may charged for spilling on bedding, sofa and lug.
         `,
 			],
 		},
