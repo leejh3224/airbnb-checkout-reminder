@@ -5,9 +5,7 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "env $(cat .env) nodemon --watch src ./index.ts -V --exec 'ts-node -r tsconfig-paths/register'",
-		"test": "env $(cat .env) jest --watch",
-		"start:pro": "tsc && node ./build",
-		"build": "tsc"
+		"test": "env $(cat .env) jest --watch"
 	},
 	"dependencies": {
 		"@google-cloud/translate": "^3.0.1",
