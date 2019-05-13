@@ -63,7 +63,7 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
             You should check out until 11:00 AM.
             Before you leave, please clean up and make sure you take all your belongings with you.
 
-            And if your leave good review, we'll pay you ₩10,00 back :)
+            And if your leave good review, we'll pay you ₩10,000 back :)
 
             Leave a review and send us Airbnb message.
             Thank you. Have a nice day :)`,
