@@ -73,11 +73,11 @@ class ReservationAutoResponder {
 			type: RESERVATION_CONFIRMED,
 		});
 
-		logger.info(
-			`예약 번호 ${reservationCode}에 대해 ${RESERVATION_CONFIRMED} 메시지를 전송했습니다.`,
-		);
-
 		if (done) {
+			logger.info(
+				`예약 번호 ${reservationCode}에 대해 ${RESERVATION_CONFIRMED} 메시지를 전송했습니다.`,
+			);
+
 			const gmail = await this.getGmailClient();
 			await gmail.users.messages.send({
 				userId: "me",
