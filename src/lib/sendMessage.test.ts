@@ -1,7 +1,12 @@
 import puppeteer from "puppeteer";
 
 import { initPuppeteer, sendMessage } from ".";
-import { CHECK_IN, CHECK_OUT, RESERVATION_CONFIRMED } from "./constants";
+import {
+	CHECK_IN,
+	CHECK_OUT,
+	RESERVATION_CONFIRMED,
+	TEST_RESERVATION_CODE,
+} from "./constants";
 
 describe("send message", () => {
 	let browser: puppeteer.Browser;
@@ -24,7 +29,7 @@ describe("send message", () => {
 			const page = await browser.newPage();
 
 			const done = await sendMessage.bind(page)({
-				reservationCode: "HMPSHBSPMJ",
+				reservationCode: TEST_RESERVATION_CODE,
 				type,
 			});
 

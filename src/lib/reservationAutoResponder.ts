@@ -13,6 +13,7 @@ import {
 import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	RESERVATION_CONFIRMED,
+	TEST_RESERVATION_CODE,
 } from "./constants";
 import reportError from "./reportError";
 
@@ -73,7 +74,7 @@ class ReservationAutoResponder {
 			type: RESERVATION_CONFIRMED,
 		});
 
-		if (done) {
+		if (done && reservationCode !== TEST_RESERVATION_CODE) {
 			logger.info(
 				`예약 번호 ${reservationCode}에 대해 ${RESERVATION_CONFIRMED} 메시지를 전송했습니다.`,
 			);

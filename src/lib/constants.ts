@@ -39,3 +39,5 @@ export const AIRBNB_LOGIN_URL = "https://www.airbnb.com/login";
 export const CHECK_IN_REMINDER_START_HOUR = 7;
 export const CHECK_IN_REMINDER_START_MINUTES = 40;
 export const ANSWER_TO_RESERVATION_PERIOD = 10;
+
+export const TEST_RESERVATION_CODE = "HMPSHBSPMJ";
