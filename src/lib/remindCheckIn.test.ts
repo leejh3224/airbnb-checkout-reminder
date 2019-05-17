@@ -31,6 +31,8 @@ describe("remindCheckIn", () => {
 
 		expect(parsed).toHaveProperty("period");
 		expect(parsed).toHaveProperty("reservationCode");
+		expect(parsed).toHaveProperty("roomName");
 		expect(parsed).toHaveProperty("status");
+		expect(Object.keys(parsed).length).toEqual(4);
 	});
 });

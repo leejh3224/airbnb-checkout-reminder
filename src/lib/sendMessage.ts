@@ -4,6 +4,7 @@ import { LANGUAGE_KOREAN } from "./constants";
 import { ReservationStatus } from "./types";
 interface SendMessageParams {
 	reservationCode: string;
+	roomId: string;
 	type: ReservationStatus;
 }
 
@@ -23,35 +24,9 @@ const getLanguage = async (page: puppeteer.Page) => {
 	return detectLanguage(firstGuestMessage);
 };
 
-const getAptNumber = async (page: puppeteer.Page) => {
-	const $aptName = "section div div div div div";
-
-	const waitUntilAptNameLoads = page.waitForFunction(
-		(selector) => {
-			const aptNameEl = document.querySelector(selector);
-			return aptNameEl && aptNameEl.textContent !== "";
-		},
-		{},
-		$aptName,
-	);
-
-	await waitUntilAptNameLoads;
-	const aptNameElement = await page.$($aptName);
-	const aptNameText = await page.evaluate(
-		(element) => element.textContent,
-		aptNameElement,
-	);
-
-	// aptNumber looks something like #4xx #3xx
-	const matchesAptName = /#(\d{3})/;
-	const [, aptNumber] = aptNameText.match(matchesAptName);
-
-	return aptNumber;
-};
-
 async function sendMessage(
 	this: puppeteer.Page,
-	{ reservationCode, type }: SendMessageParams,
+	{ reservationCode, type, roomId }: SendMessageParams,
 ): Promise<boolean | void> {
 	try {
 		const $sendMessageTextarea = "#send_message_textarea";
@@ -64,10 +39,8 @@ async function sendMessage(
 		await this.goto(fullUrl, { waitUntil: "networkidle0" });
 
 		const lang = await getLanguage(this);
-		const aptNumber = await getAptNumber(this);
-
 		const checkInOutMessages = getMessage(type, {
-			aptNumber,
+			roomId,
 		})![lang!];
 
 		for await (const msg of checkInOutMessages) {

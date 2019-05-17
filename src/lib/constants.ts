@@ -10,18 +10,18 @@ export const LANGUAGE_KOREAN = "ko";
 export const LANGUAGE_ENGLISH = "en";
 export const LANGUAGE_UNKNOWN = "und";
 
-export const SELF_CHECK_IN_LINK: { [key: string]: string } = {
-	201: "27092267",
-	302: "31765470",
-	304: "31765531",
-	406: "30923304",
-	408: "32050698",
-	503: "29767093",
-	308: "33443064",
-	403: "33443644",
-	405: "33443985",
-	501: "34123213",
-	301: "34342772",
+export const ROOM_ID_MAP: { [roomName: string]: string } = {
+	"*포항 영일대 해수욕장 도보5분 #201 Joy’s Cozy House": "27092267",
+	"*포항 영일대 해수욕장 도보5분 #302 Joy’s Cozy House": "31765470",
+	"*포항 영일대 해수욕장 도보5분 #304 Joy’s Cozy House": "31765531",
+	"*포항 영일대 해수욕장 도보5분 #406 Joy’s Cozy House": "30923304",
+	"*포항 영일대 해수욕장 도보5분 #408 Joy’s Cozy House": "32050698",
+	"*포항 영일대 해수욕장 도보5분 #503 Joy’s Cozy House": "29767093",
+	"*포항 영일대 해수욕장 도보5분 #308 Joy’s Cozy House": "33443064",
+	"*포항 영일대 해수욕장 도보5분 #403 Joy’s Cozy House": "33443644",
+	"*포항 영일대 해수욕장 도보5분 #405 Joy’s Cozy House": "33443985",
+	"*포항 영일대 해수욕장 도보5분 #501 Joy’s Cozy House": "34123213",
+	"*포항 영일대 해수욕장 도보5분 #301 Joy’s Cozy House": "34342772",
 };
 
 export const GMAIL_SCOPES = [

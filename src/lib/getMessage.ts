@@ -4,19 +4,16 @@ import {
 	CHECK_OUT,
 	RESERVATION_CONFIRMED,
 	SELF_CHECK_IN_BASE_URL,
-	SELF_CHECK_IN_LINK,
 } from "./constants";
 import { ReservationStatus } from "./types";
 
 interface Options {
-	aptNumber: string;
+	roomId: string;
 }
 
-const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
-	if (!SELF_CHECK_IN_LINK[aptNumber]) {
-		throw new Error(
-			"알 수 없는 객실입니다. 셀프 체크인 가이드 오브젝트에 추가해주세요.",
-		);
+const getMessage = (type: ReservationStatus, { roomId }: Options) => {
+	if (!roomId) {
+		throw new Error("알 수 없는 객실입니다.");
 	}
 
 	// tslint:disable: max-line-length
@@ -31,7 +28,7 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
             전화 연락은 어려울 수 있습니다.
 
             그럼 즐거운 여행이 되시길 바래요~!!
-            ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
+            ${SELF_CHECK_IN_BASE_URL}/${roomId}
           `,
 			],
 			en: [
@@ -42,7 +39,7 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
             Please leave an Airbnb message.
 
             Then have a nice trip :)
-            ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
+            ${SELF_CHECK_IN_BASE_URL}/${roomId}
           `,
 			],
 		},
@@ -85,7 +82,7 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
 
           * 약도 / 체크인 / 비밀번호 / 숙소 이용 / 맛집 안내는 아래 링크를 통해 체크인 3일 전부터 확인 가능합니다.
 
-          ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
+          ${SELF_CHECK_IN_BASE_URL}/${roomId}
         `,
 			],
 			en: [
@@ -109,7 +106,7 @@ const getMessage = (type: ReservationStatus, { aptNumber }: Options) => {
           in self check in guide.
           (Self check in guide link will be open 3days before check in)
 
-          ${SELF_CHECK_IN_BASE_URL}/${SELF_CHECK_IN_LINK[aptNumber]}
+          ${SELF_CHECK_IN_BASE_URL}/${roomId}
         `,
 			],
 		},

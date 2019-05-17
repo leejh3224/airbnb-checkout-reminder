@@ -13,6 +13,7 @@ import {
 import {
 	ANSWER_TO_RESERVATION_PERIOD,
 	RESERVATION_CONFIRMED,
+	SELF_CHECK_IN_BASE_URL,
 	TEST_RESERVATION_CODE,
 } from "./constants";
 import reportError from "./reportError";
@@ -38,9 +39,12 @@ class ReservationAutoResponder {
 				const { title, body } = this.parseMail(data);
 
 				const reservationCode = this.getReservationCode(body);
+				const roomId = this.getRoomId(body);
+
 				await this.respond({
 					reservationCode,
 					reservationTitle: title,
+					roomId,
 				});
 
 				await this.deleteMail({ id: mail.id });
@@ -62,15 +66,18 @@ class ReservationAutoResponder {
 	public async respond({
 		reservationCode,
 		reservationTitle,
+		roomId,
 	}: {
 		reservationCode: string;
 		reservationTitle: string;
+		roomId: string;
 	}) {
 		await airbnbLogin.bind(this.browser)();
 
 		const newPage = await this.browser.newPage();
 		const done = await sendMessage.bind(newPage)({
 			reservationCode,
+			roomId,
 			type: RESERVATION_CONFIRMED,
 		});
 
@@ -95,15 +102,37 @@ class ReservationAutoResponder {
 		// Airbnb reservation code is consisted of capital letters and numbers
 		const matchReservationCode = /[A-Z0-9]{10}/;
 		const matched = mailBody.match(matchReservationCode);
+		const errorMessage = "메일에서 예약 코드를 찾을 수 없습니다.";
 
 		if (!matched) {
-			throw new Error(
-				"메일에서 예약 코드를 찾을 수 없습니다. 예약 코드를 매칭하는 규칙을 개선하세요.",
-			);
+			throw new Error(errorMessage);
 		}
 
 		const [reservationCode] = matched;
+
+		if (!reservationCode) {
+			throw new Error(errorMessage);
+		}
+
 		return reservationCode;
+	}
+
+	public getRoomId(mailBody: string) {
+		const matchRoomUrl = /(https:\/\/www.airbnb.co.kr\/rooms\/)([0-9]{8})/;
+		const matched = mailBody.match(matchRoomUrl);
+		const errorMessage = "메일에서 roomId를 찾을 수 없습니다.";
+
+		if (!matched) {
+			throw new Error(errorMessage);
+		}
+
+		const [, , roomId] = matched;
+
+		if (!roomId) {
+			throw new Error(errorMessage);
+		}
+
+		return roomId;
 	}
 
 	public parseMail(mail: gmail_v1.Schema$Message) {

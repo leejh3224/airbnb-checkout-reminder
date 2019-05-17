@@ -31,6 +31,7 @@ describe("send message", () => {
 			const done = await sendMessage.bind(page)({
 				reservationCode: TEST_RESERVATION_CODE,
 				type,
+				roomId: "32050698",
 			});
 
 			expect(done).toBe(true);

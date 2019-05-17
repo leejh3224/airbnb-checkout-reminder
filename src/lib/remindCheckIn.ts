@@ -7,8 +7,14 @@ import {
 	sendMessage,
 } from ".";
 import "./ArrayExt";
-import { CHECK_IN, CHECK_OUT } from "./constants";
+import { CHECK_IN, CHECK_OUT, ROOM_ID_MAP } from "./constants";
 import { ReservationStatus } from "./types";
+
+type ICellParser = (
+	element: any,
+	cellSelector: string,
+	periodSelector: string,
+) => string;
 
 export const getReservationTable = async (page: puppeteer.Page) => {
 	// selectors
@@ -26,32 +32,42 @@ export const getReservationTable = async (page: puppeteer.Page) => {
 	return page.$$($row);
 };
 
-const parsePeriod = (
-	element: any,
-	cellSelector: string,
-	periodSelector: string,
-) => {
-	// reservation period is the 4th cell
+const parsePeriod: ICellParser = (element, cellSelector, periodSelector) => {
 	const [, , , periodCell] = element.querySelectorAll(cellSelector);
 	return periodCell.querySelector(periodSelector).textContent;
 };
 
-const getPeriod = async (
+const parseRoomName: ICellParser = (element, cellSelector, periodSelector) => {
+	const [, , , , , roomNameCell] = element.querySelectorAll(cellSelector);
+	return roomNameCell.querySelector(periodSelector).textContent;
+};
+
+const getCellData = async (
 	page: puppeteer.Page,
 	row: puppeteer.ElementHandle<Element>,
+	{
+		selector,
+		parser,
+	}: {
+		selector: string;
+		parser: ICellParser;
+	},
 ) => {
-	// selectors
 	const $cell = "td";
-	const $period = "td > div > div";
 
-	return page.evaluate(parsePeriod, row, $cell, $period);
+	return page.evaluate(parser, row, $cell, selector);
 };
 
 const filterByCheckInStatus = async (
 	page: puppeteer.Page,
 	row: puppeteer.ElementHandle<Element>,
 ) => {
-	const period = await getPeriod(page, row);
+	const $period = "td > div > div";
+
+	const period = await getCellData(page, row, {
+		selector: $period,
+		parser: parsePeriod,
+	});
 	const status = getReservationStatus(period);
 	const willCheckInOrOut = status === CHECK_IN || status === CHECK_OUT;
 
@@ -63,8 +79,17 @@ export const parseTableRow = async (
 	row: puppeteer.ElementHandle<Element>,
 ) => {
 	const $itineraryButton = 'a[href^="/reservation/itinerary"]';
+	const $roomName = "td > div > div";
+	const $period = "td > div > div";
 
-	const period = await getPeriod(page, row);
+	const roomName = await getCellData(page, row, {
+		selector: $roomName,
+		parser: parseRoomName,
+	});
+	const period = await getCellData(page, row, {
+		selector: $period,
+		parser: parsePeriod,
+	});
 	const status = getReservationStatus(period);
 	const itineraryButton = await row.$($itineraryButton);
 	const itineraryUrl = await page.evaluate(
@@ -74,6 +99,7 @@ export const parseTableRow = async (
 	const [, reservationCode] = new URL(itineraryUrl).search.split("=");
 
 	return {
+		roomName,
 		period,
 		reservationCode,
 		status,
@@ -111,7 +137,7 @@ const remindCheckIn = async (browser: puppeteer.Browser) => {
 		);
 
 		return result.asyncForEach(async (row) => {
-			const { period, reservationCode, status } = await parseTableRow(
+			const { period, reservationCode, status, roomName } = await parseTableRow(
 				page,
 				row,
 			);
@@ -120,6 +146,7 @@ const remindCheckIn = async (browser: puppeteer.Browser) => {
 			await sendMessage.bind(newTab)({
 				reservationCode,
 				type: status as ReservationStatus,
+				roomId: ROOM_ID_MAP[roomName],
 			});
 
 			logger.info(
