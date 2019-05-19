@@ -11,17 +11,19 @@ export const LANGUAGE_ENGLISH = "en";
 export const LANGUAGE_UNKNOWN = "und";
 
 export const ROOM_ID_MAP: { [roomName: string]: string } = {
-	"*포항 영일대 해수욕장 도보5분 #201 Joy’s Cozy House": "27092267",
-	"*포항 영일대 해수욕장 도보5분 #302 Joy’s Cozy House": "31765470",
-	"*포항 영일대 해수욕장 도보5분 #304 Joy’s Cozy House": "31765531",
-	"*포항 영일대 해수욕장 도보5분 #406 Joy’s Cozy House": "30923304",
-	"*포항 영일대 해수욕장 도보5분 #408 Joy’s Cozy House": "32050698",
-	"*포항 영일대 해수욕장 도보5분 #503 Joy’s Cozy House": "29767093",
-	"*포항 영일대 해수욕장 도보5분 #308 Joy’s Cozy House": "33443064",
-	"*포항 영일대 해수욕장 도보5분 #403 Joy’s Cozy House": "33443644",
-	"*포항 영일대 해수욕장 도보5분 #405 Joy’s Cozy House": "33443985",
-	"*포항 영일대 해수욕장 도보5분 #501 Joy’s Cozy House": "34123213",
-	"*포항 영일대 해수욕장 도보5분 #301 Joy’s Cozy House": "34342772",
+	"포항 영일대 해수욕장 도보5분 A1 Joy’s Cozy House": "27092267",
+	"포항 영일대 해수욕장 도보5분 B2 Joy’s Cozy House": "31765470",
+	"포항 영일대 해수욕장 도보5분 B4 Joy’s Cozy House": "31765531",
+	"포항 영일대 해수욕장 도보5분 C6 Joy’s Cozy House": "30923304",
+	"포항 영일대 해수욕장 도보5분 C8 Joy’s Cozy House": "32050698",
+	"포항 영일대 해수욕장 도보5분 D3 Joy’s Cozy House": "29767093",
+	"포항 영일대 해수욕장 도보5분 B8 Joy’s Cozy House": "33443064",
+	"포항 영일대 해수욕장 도보5분 C3 Joy’s Cozy House": "33443644",
+	"포항 영일대 해수욕장 도보5분 C5 Joy’s Cozy House": "33443985",
+	"포항 영일대 해수욕장 도보5분 D1 Joy’s Cozy House": "34123213",
+	"포항 영일대 해수욕장 도보5분 B1 Joy’s Cozy House": "34342772",
+	"포항 영일대 해수욕장 도보5분 B6 Joy’s Cozy House": "34855676",
+	"포항 영일대 해수욕장 도보5분 A4 Joy’s Cozy House": "34855016",
 };
 
 export const GMAIL_SCOPES = [
