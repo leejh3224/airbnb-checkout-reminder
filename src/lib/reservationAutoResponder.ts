@@ -175,7 +175,7 @@ class ReservationAutoResponder {
 
 	public getLastExecutedAtTimestamp = () => {
 		const lastExecutedAt = moment().subtract(
-			ANSWER_TO_RESERVATION_PERIOD - 2, // prevent race condition
+			ANSWER_TO_RESERVATION_PERIOD,
 			"minutes",
 		);
 		return lastExecutedAt.unix();
