@@ -1,11 +1,11 @@
-import { stripIndents } from "common-tags";
+import { stripIndents } from 'common-tags';
 import {
 	CHECK_IN,
 	CHECK_OUT,
 	RESERVATION_CONFIRMED,
 	SELF_CHECK_IN_BASE_URL,
-} from "./constants";
-import { ReservationStatus } from "./types";
+} from './constants';
+import { ReservationStatus } from './types';
 
 interface Options {
 	roomId: string;
@@ -13,7 +13,7 @@ interface Options {
 
 const getMessage = (type: ReservationStatus, { roomId }: Options) => {
 	if (!roomId) {
-		throw new Error("알 수 없는 객실입니다.");
+		throw new Error('알 수 없는 객실입니다.');
 	}
 
 	// tslint:disable: max-line-length
@@ -47,12 +47,12 @@ const getMessage = (type: ReservationStatus, { roomId }: Options) => {
 			ko: [
 				stripIndents`
             여행은 즐거우셨나요? ^^
-            체크아웃은 11시까지예요.
+            체크아웃은 11시까지에요.
             퇴실전에 기본적인 뒷정리 부탁드리고, 놓고 가는 물건이 없는 지 한번 더 체크해보세요~
 
-            그리고 높은 평점, 좋은 후기를 적어주시면 감사의 뜻으로 ₩10,000 을 돌려드려요~ ^^
+            그리고 높은 평점, 좋은 후기를 적어주시면 감사의 뜻으로 ₩10,000을 돌려드리는 이벤트를 진행하고 있어요~ ^^
 
-            후기 작성하고 메세지 남겨주세요~`,
+            체크아웃 몇 시간 뒤에 [후기 작성] 알림이 오면 후기 작성하시고 메세지 남겨주세요~`,
 			],
 			en: [
 				stripIndents`
