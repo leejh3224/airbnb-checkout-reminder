@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { gmail_v1, google } from 'googleapis';
 import moment from 'moment';
 import puppeteer from 'puppeteer';
@@ -13,10 +14,12 @@ import {
 import {
   ANSWER_TO_RESERVATION_PERIOD,
   RESERVATION_CONFIRMED,
-  SELF_CHECK_IN_BASE_URL,
+  RESERVATIONS_FILE_PATH,
+  ROOM_ID_MAP,
   TEST_RESERVATION_CODE,
 } from './constants';
 import reportError from './reportError';
+import { Reservation } from './types';
 
 class ReservationAutoResponder {
   private gmail?: gmail_v1.Gmail;
@@ -34,12 +37,18 @@ class ReservationAutoResponder {
         return;
       }
 
+      const newReservations: Reservation[] = [];
+
       for await (const mail of mails) {
         const data = await this.getSingleMail({ id: mail.id });
         const { title, body } = this.parseMail(data);
 
         const reservationCode = this.getReservationCode(body);
         const roomId = this.getRoomId(body);
+        const roomName = this.getRoomName(body);
+        const { startDate, endDate } = this.getPeriod(body);
+
+        newReservations.push({ startDate, endDate, roomName, reservationCode });
 
         await this.respond({
           reservationCode,
@@ -49,6 +58,14 @@ class ReservationAutoResponder {
 
         await this.deleteMail({ id: mail.id });
       }
+
+      const oldReservations = await fs.readFile(RESERVATIONS_FILE_PATH, {
+        encoding: 'utf-8',
+      });
+      await this.updateReservationsFile(
+        JSON.parse(oldReservations as string),
+        newReservations,
+      );
     } catch (error) {
       const [page] = await this.browser.pages();
       await reportError(page, error);
@@ -199,6 +216,50 @@ class ReservationAutoResponder {
     } as any);
 
     return messages;
+  }
+
+  public async updateReservationsFile(
+    oldReservations: Reservation[],
+    newReservations: Reservation[],
+  ) {
+    return fs.writeFile(
+      RESERVATIONS_FILE_PATH,
+      JSON.stringify([...oldReservations, ...newReservations]),
+      'utf-8',
+    );
+  }
+
+  public getPeriod(mailBody: string) {
+    const matchPeriod = /\d{4}년\s\d{1,2}월\s\d{1,2}일/g;
+    const matched = mailBody.match(matchPeriod);
+    const errorMessage = '메일에서 기간을 찾을 수 없습니다.';
+
+    if (!matched) {
+      throw new Error(errorMessage);
+    }
+
+    const [startDate, endDate] = matched;
+
+    if (!startDate || !endDate) {
+      throw new Error(errorMessage);
+    }
+
+    return {
+      startDate: moment(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+      endDate: moment(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+    };
+  }
+
+  public getRoomName(findRoomId: string) {
+    const room = Object.entries(ROOM_ID_MAP).find(
+      ([_, roomId]) => roomId === findRoomId,
+    );
+
+    if (room) {
+      return room[0];
+    }
+
+    throw new Error('roomName을 찾을 수 없습니다.');
   }
 }
 

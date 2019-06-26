@@ -1,16 +1,17 @@
+import { promises as fs } from 'fs';
 import moment from 'moment';
 import puppeteer from 'puppeteer';
 
 import { initPuppeteer } from '.';
 import * as testMail from '../fixtures/gmail/messages.get.json';
-import { TEST_RESERVATION_CODE } from './constants';
+import { RESERVATIONS_FILE_PATH, TEST_RESERVATION_CODE } from './constants';
 import ReservationAutoResponder from './reservationAutoResponder';
 
 describe('reservationAutoResponder', () => {
   let browser: puppeteer.Browser;
 
   beforeAll(async () => {
-    browser = await initPuppeteer(false);
+    // browser = await initPuppeteer(false);
 
     // puppeteer test takes longer time than usual tests.
     // so override default jest timeout not to interrupt test

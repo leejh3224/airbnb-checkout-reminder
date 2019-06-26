@@ -1,163 +1,81 @@
+import { promises as fs } from 'fs';
+import moment from 'moment';
 import puppeteer from 'puppeteer';
-import {
-  airbnbLogin,
-  getReservationStatus,
-  logger,
-  reportError,
-  retry,
-  sendMessage,
-} from '.';
+import { airbnbLogin, logger, reportError, sendMessage } from '.';
+import reservations from '../../reservations.json';
 import './ArrayExt';
-import { CHECK_IN, CHECK_OUT, ROOM_ID_MAP } from './constants';
-import { ReservationStatus } from './types';
+import {
+  CHECK_IN,
+  CHECK_OUT,
+  GUEST_STAYING,
+  OUT_OF_RANGE,
+  RESERVATIONS_FILE_PATH,
+  ROOM_ID_MAP,
+} from './constants';
+import { Reservation, ReservationStatus } from './types';
 
-type ICellParser = (
-  element: any,
-  cellSelector: string,
-  periodSelector: string,
-) => string;
+const filterOldReservations = (reservationsArray: Reservation[]) => {
+  return reservationsArray.filter(reservation => {
+    const now = moment(new Date());
+    const isOld = moment(reservation.endDate).isBefore(now, 'day');
+    return !isOld;
+  });
+};
 
-const waitOrReload = async (page: puppeteer.Page) => {
-  const $table = 'table';
+const getReservationStatus = (startDate: Date, endDate: Date) => {
+  const now = moment(new Date());
+  const start = moment(startDate);
+  const end = moment(endDate);
+  let status: ReservationStatus;
 
-  try {
-    await page.waitForSelector($table);
-  } catch (error) {
-    await page.reload();
+  const willCheckIn = start.isSame(now, 'day');
+  const willCheckOut = end.isSame(now, 'day');
+  const willStay = now.isBetween(start, end, 'day', '()');
+
+  if (willCheckIn) {
+    status = CHECK_IN;
+  } else if (willCheckOut) {
+    status = CHECK_OUT;
+  } else if (willStay) {
+    status = GUEST_STAYING;
+  } else {
+    status = OUT_OF_RANGE;
   }
-};
 
-export const getReservationTable = async (page: puppeteer.Page) => {
-  await retry(waitOrReload, page, 5, 1000, true);
-
-  const $table = 'table';
-  const $row = `${$table} > tbody > tr`;
-  const table = await page.$$($row);
-
-  return table;
-};
-
-const parsePeriod: ICellParser = (element, cellSelector, periodSelector) => {
-  const [, , , periodCell] = element.querySelectorAll(cellSelector);
-  return periodCell.querySelector(periodSelector).textContent;
-};
-
-const parseRoomName: ICellParser = (element, cellSelector, periodSelector) => {
-  const [, , , , , roomNameCell] = element.querySelectorAll(cellSelector);
-  return roomNameCell.querySelector(periodSelector).textContent;
-};
-
-const getCellData = async (
-  page: puppeteer.Page,
-  row: puppeteer.ElementHandle<Element>,
-  {
-    selector,
-    parser,
-  }: {
-    selector: string;
-    parser: ICellParser;
-  },
-) => {
-  const $cell = 'td';
-
-  return page.evaluate(parser, row, $cell, selector);
-};
-
-const filterByCheckInStatus = async (
-  page: puppeteer.Page,
-  row: puppeteer.ElementHandle<Element>,
-) => {
-  const $period = 'td > div > div';
-
-  const period = await getCellData(page, row, {
-    selector: $period,
-    parser: parsePeriod,
-  });
-  const status = getReservationStatus(period);
-  const willCheckInOrOut = status === CHECK_IN || status === CHECK_OUT;
-
-  return willCheckInOrOut;
-};
-
-export const parseTableRow = async (
-  page: puppeteer.Page,
-  row: puppeteer.ElementHandle<Element>,
-) => {
-  const $itineraryButton = 'a[href^="/reservation/itinerary"]';
-  const $roomName = 'td > div > div';
-  const $period = 'td > div > div';
-
-  const roomName = await getCellData(page, row, {
-    selector: $roomName,
-    parser: parseRoomName,
-  });
-  const period = await getCellData(page, row, {
-    selector: $period,
-    parser: parsePeriod,
-  });
-  const status = getReservationStatus(period);
-  const itineraryButton = await row.$($itineraryButton);
-  const itineraryUrl = await page.evaluate(
-    element => element.href,
-    itineraryButton,
-  );
-  const [, reservationCode] = new URL(itineraryUrl).search.split('=');
-
-  return {
-    roomName,
-    period,
-    reservationCode,
-    status,
-  };
-};
-
-export const setup = async (browser: puppeteer.Browser) => {
-  await airbnbLogin.bind(browser)();
-  const reservationsUrl =
-    'https://www.airbnb.com/hosting/reservations/upcoming';
-
-  const [page] = await browser.pages();
-
-  /**
-   * In order to show itinerary button, viewport width must be at least 1200
-   * and itinerary button is used for getting reservation code
-   */
-  await page.setViewport({
-    width: 1920,
-    height: 1080,
-  });
-
-  await page.goto(reservationsUrl);
-
-  return page;
+  return status;
 };
 
 const remindCheckIn = async (browser: puppeteer.Browser) => {
   try {
-    const page = await setup(browser);
-    const table = await getReservationTable(page);
+    await airbnbLogin.bind(browser)();
 
-    const result = await table.asyncFilter(row =>
-      filterByCheckInStatus(page, row),
+    const remindCheckInPromises = reservations.map(
+      async ({ reservationCode, startDate, endDate, roomName }) => {
+        const status = getReservationStatus(
+          new Date(startDate),
+          new Date(endDate),
+        );
+
+        const newTab = await browser.newPage();
+        await sendMessage.bind(newTab)({
+          reservationCode,
+          type: status as ReservationStatus,
+          roomId: ROOM_ID_MAP[roomName],
+        });
+
+        logger.info(
+          `${startDate} ~ ${endDate} 기간의 예약에 대해 ${status} 메시지를 전송했습니다.`,
+        );
+      },
     );
 
-    return result.asyncForEach(async row => {
-      const { period, reservationCode, status, roomName } = await parseTableRow(
-        page,
-        row,
-      );
+    await Promise.all(remindCheckInPromises);
 
-      const newTab = await browser.newPage();
-      await sendMessage.bind(newTab)({
-        reservationCode,
-        type: status as ReservationStatus,
-        roomId: ROOM_ID_MAP[roomName],
-      });
-
-      logger.info(
-        `${period} 기간의 예약에 대해 ${status} 메시지를 전송했습니다.`,
-      );
-    });
+    await fs.writeFile(
+      RESERVATIONS_FILE_PATH,
+      JSON.stringify(filterOldReservations(reservations)),
+      'utf-8',
+    );
   } catch (error) {
     const page = await browser.newPage();
     await reportError(page, error);

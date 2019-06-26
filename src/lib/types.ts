@@ -12,3 +12,10 @@ export type ReservationStatus =
   | typeof GUEST_STAYING
   | typeof OUT_OF_RANGE
   | typeof RESERVATION_CONFIRMED;
+
+export interface Reservation {
+  reservationCode: string;
+  startDate: string;
+  endDate: string;
+  roomName: string;
+}
