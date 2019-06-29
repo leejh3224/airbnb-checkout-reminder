@@ -1,5 +1,13 @@
 # Airbnb checkout reminder
 
+## Disclaimer
+
+Airbnb-checkout-reminder will no longer be maintained and it would not work as expected in the future.
+The reason for this is that it's extremely difficult to bypass Gmail/Airbnb api protections.
+They uses their own api protection mechanism, such as RECHAPCHA and Airlock.
+It means your app can suddenly stop working at any moment throwing errors such as 'Cannot find element: xxx timeout 30000s'.
+I'm currently working on version2 of this app which doesn't uses either Gmail or Airbnb api.
+
 ## Features
 
 - It sends predefined check-in/check-out messages at a set time
